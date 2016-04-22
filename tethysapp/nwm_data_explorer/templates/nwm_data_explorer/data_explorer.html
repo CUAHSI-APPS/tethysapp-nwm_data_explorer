@@ -1,0 +1,32 @@
+{% extends "nwm_data_explorer/base.html" %}
+{% load staticfiles %}
+
+{% block app_content %}
+    <h1 id="title"></h1>
+    <h4 id="subtitle"></h4>
+    <div id="drop-down"></div>
+    <br><br>
+    <div id="dynamic-content">
+    <span id="file-button-options">
+        <button type="button" class="btn btn-success btn-lg hidden" id="download-button">
+            <span class="glyphicon download" aria-hidden="true"></span>
+            <img src="/static/nwm_data_explorer/images/download_icon.svg" class="button-icon"/> Download File
+        </button>
+    </span>
+        <br><br>
+        <div id="file-info">
+        </div>
+    </div>
+{% endblock %}
+
+{% block content_dependent_styles %}
+    {{ block.super }}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css" rel="stylesheet" />
+    <link href="{% static 'nwm_data_explorer/css/data_explorer.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.min.js"></script>
+    <script src="{% static 'nwm_data_explorer/js/data_explorer.js' %}" type="text/javascript"></script>
+{% endblock %}

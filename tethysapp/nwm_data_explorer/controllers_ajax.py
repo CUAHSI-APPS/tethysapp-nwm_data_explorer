@@ -28,22 +28,23 @@ def get_folder_contents(request):
 
 def data_query(query_type, selection_path):
     response = None
-    folders = []
-    files = []
+    contents = []
 
-    resource = 'collection' if '?COLLECTION' in selection_path else 'dataObject'
+    resource = 'collection' if '?folder' in selection_path else 'dataObject'
     object_type_index = selection_path.rfind('?')
     selection_path = selection_path[0:object_type_index]
 
     if query_type == 'filesystem':
         if os.path.exists(selection_path):
             if os.path.isdir(selection_path):
-                contents = os.listdir(selection_path)
-                contents.sort()
-                for f in contents:
-                    select_option = '<option value="%s" data-path="%s">%s</option>' % \
-                                    (f, os.path.join(selection_path, f) + "?FILE", f)
-                    files.append(select_option)
+                raw_contents = os.listdir(selection_path)
+                raw_contents.sort()
+                for f in raw_contents:
+                    data_type = "folder" if os.path.isdir(os.path.join(selection_path, f)) else "file"
+
+                    select_option = '<option value="%s" class="%s" data-path="%s">%s</option>' % \
+                                    (f, data_type, os.path.join(selection_path, f) + '?' + data_type, f)
+                    contents.append(select_option)
             else:
                 file_stats = os.stat(selection_path)
                 file_name = os.path.basename(selection_path)
@@ -80,61 +81,56 @@ def data_query(query_type, selection_path):
             for i in range(0, entry_count):
                 object_type = entries_object['objectType'] if type(entry_count) == dict \
                     else entries_object[i]['objectType']
-                if object_type == "COLLECTION":
+                if object_type == 'COLLECTION':
+                    data_type = 'folder'
                     folder_path = entries_object['pathOrName'] if type(entry_count) == dict \
                         else entries_object[i]['pathOrName']
                     last_dash_index = folder_path.rfind('/')
                     folder_name = folder_path[last_dash_index + 1:]
                     select_option = '<option value="%s" data-path="%s">%s</option>' % \
-                                    (folder_name, folder_path + "?" + object_type, folder_name)
-                    folders.append(select_option)
+                                    (folder_name, folder_path + "?" + data_type, folder_name)
+                    contents.append(select_option)
                 else:
+                    data_type = 'file'
                     file_name = entries_object['pathOrName'] if type(entry_count) == dict \
                         else entries_object[i]['pathOrName']
                     file_path = (entries_object['parentPath'] + '/' + file_name) if type(entry_count) == dict \
                         else (entries_object[i]['parentPath'] + '/' + file_name)
                     select_option = '<option value="%s" data-path="%s">%s</option>' % \
-                                    (file_name, file_path + "?" + object_type, file_name)
-                    files.append(select_option)
+                                    (file_name, file_path + "?" + data_type, file_name)
+                    contents.append(select_option)
 
         except Exception as e:
             print "An error ocurred"
             print str(e)
             if resource == "collection":
-                folders = ''
-                files = '<select title="No files to display" class="files"><option></option></select>'
+                contents = '<select title="This folder is empty" class="files"><option></option></select>'
                 query_data = {
-                    'folders': folders,
-                    'files': files
+                    'contents': contents
                 }
                 return query_data
             else:
                 query_data = response if response else "An error occured"
                 return query_data
 
-    if folders:
-        folders.insert(0, '<select title="Select a directory" class="folders"><option></option>')
-        folders.append('</select>')
-        folders = ''.join(folders)
-
-    if files:
-        files.insert(0, '<select title="Select a file" class="files"><option></option>')
-        files.append('</select>')
-        files = ''.join(files)
+    if contents:
+        contents.insert(0, '<select title="Select a file/folder" class="contents"><option></option>')
+        contents.append('</select>')
+        contents = ''.join(contents)
 
     query_data = {
-        'folders': folders,
-        'files': files
+        'contents': contents
     }
 
     return query_data
 
 
 def delete_temp_files(request):
-    temp_folder_path = getfile(currentframe()).replace('controllers_ajax.py', 'public/temp_files')
-    if os.path.exists(temp_folder_path):
-        rmtree(temp_folder_path)
+    if request.method == 'GET' and request.is_ajax():
+        temp_folder_path = getfile(currentframe()).replace('controllers_ajax.py', 'public/temp_files')
+        if os.path.exists(temp_folder_path):
+            rmtree(temp_folder_path)
 
-    return JsonResponse({
-        'success': 'Temp folder successfully deleted.'
-    })
+        return JsonResponse({
+            'success': 'Temp folder successfully deleted.'
+        })

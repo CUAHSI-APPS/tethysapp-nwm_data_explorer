@@ -47,7 +47,7 @@ var $,
                 async: false
             });
         });
-        $dropDowns.on('select2:select', '.folders', function (e) {
+        $dropDowns.on('select2:select', '.contents', function (e) {
             var numElements,
                 selectionPath;
 
@@ -62,21 +62,9 @@ var $,
             }
         });
 
-        $dropDowns.on('select2:unselect', '.folders', function () {
+        $dropDowns.on('select2:unselect', '.contents', function () {
             $('[aria-expanded=true]').parent().parent().remove();
             $(this).next().nextAll().remove();
-            if (!($fileInfoDiv.is(':empty'))) {
-                clearFileInfo();
-            }
-        });
-
-        $dropDowns.on('select2:select', '.files', function (e) {
-            var selection_path = $(e.params.data.element).attr('data-path');
-            dataQuery(getQueryType(), selection_path);
-        });
-
-        $dropDowns.on('select2:unselect', '.files', function () {
-            $('[aria-expanded=true]').parent().parent().remove();
             if (!($fileInfoDiv.is(':empty'))) {
                 clearFileInfo();
             }
@@ -239,8 +227,7 @@ var $,
                 console.log(jqXHR + '\n' + textStatus + '\n' + errorThrown);
             },
             success: function (data) {
-                var folders,
-                    files,
+                var contents,
                     newDropDownData,
                     dropDownType;
 
@@ -249,13 +236,10 @@ var $,
                         alert(data.error);
                     }
                 } else {
-                    folders = data.query_data.folders;
-                    files = data.query_data.files;
-                    if (folders || files) { //check to see if the files or folders attributes have data
-                        newDropDownData = folders.length === 0 ? files : folders;
-                        $dropDowns.append(newDropDownData); //create the new dropdown box with its file/folder options
-                        dropDownType = folders.length === 0 ? "files" : "folders";
-                        formatDropDown(dropDownType); //format the dropdown with file or folder pictures accordingly
+                    contents = data.query_data.contents;
+                    if (contents) { //check to see if the files or folders attributes have data
+                        $dropDowns.append(contents); //create the new dropdown box with its file/folder options
+                        formatDropDown(); //format the dropdown with file or folder pictures accordingly
                     } else { //if there wasn't any data in the files or folders attributes, the selection was a file
                         processFileData(data, selectionPath, queryType);
                     }
@@ -304,31 +288,21 @@ var $,
         $displayStatus = $('#display-status');
     };
 
-    formatDropDown = function (dropDownType) {
-        if (dropDownType === "files") {
-            $('.files').select2({
-                placeholder: "Select a file",
-                allowClear: true,
-                minimumResultsForSearch: 7,
-                templateResult: formatDropdownOptions,
-                templateSelection: formatDropdownOptions
-            });
-        } else {
-            $('.folders').select2({
-                placeholder: "Select a folder",
-                allowClear: true,
-                minimumResultsForSearch: 7,
-                templateResult: formatDropdownOptions,
-                templateSelection: formatDropdownOptions
-            });
-        }
+    formatDropDown = function () {
+        $('.contents:last-child').select2({
+            placeholder: "Select a file/folder",
+            allowClear: true,
+            minimumResultsForSearch: 7,
+            templateResult: formatDropdownOptions,
+            templateSelection: formatDropdownOptions
+        });
     };
 
     formatDropdownOptions = function (state) {
         if (!state.id) {
             return state.text;
         }
-        if ($(state.element).attr('data-path').indexOf("?COLLECTION") !== -1) {
+        if ($(state.element).attr('data-path').indexOf("?folder") !== -1) {
             return $('<span><img src="/static/nfie_irods_explorer/images/dir_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
         }
         return $('<span><img src="/static/nfie_irods_explorer/images/file_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
@@ -346,11 +320,11 @@ var $,
         if (window.location.pathname.indexOf('files_explorer') !== -1) {
             $title.text('Filesystem Explorer');
             $subtitle.text('Browse the National Water Model data stored on the server');
-            dataQuery('filesystem', '/projects/water/nwm/nwm_sample?COLLECTION');
+            dataQuery('filesystem', '/projects/water/nwm/nwm_sample?folder');
         } else {
             $title.text('iRODS Explorer');
             $subtitle.text('Browse the National Water Model data stored in iRODS');
-            dataQuery('irods', '/nfiehydroZone/home/public/nwm_sample?COLLECTION');
+            dataQuery('irods', '/nfiehydroZone/home/public/nwm_sample?folder');
         }
     });
 }());

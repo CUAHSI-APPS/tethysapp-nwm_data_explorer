@@ -3,6 +3,25 @@
 
 {% block app_content %}
     <h1>Welcome to the National Water Model Data Explorer</h1>
+    <p>
+        This app was created to allow users to explore the National Water Model data being stored both in the iRODS cloud and on
+        this server's filesystem. This can be done both from within this app by using one of two separate exploration pages, or
+        externally through the developers API provided. To learn more about the exploration pages, see the Data Exploration
+        Pages section below. To learn more about the developers api, click the Developers API link in the left navigation bar.
+    </p>
+    <h2>Data Exploration Pages</h2>
+    <p>
+        There is a link in the left navigation bar corresponding to each of these exploration options.
+        Both exploration pages have the same simple layout. Each starts with one selectable dropdown list that can be
+        expanded to view all of the files and/or folders in the current directory. If a folder is selected from the dropdown list,
+        then an additional selectable dropdown list appears, which can be expanded to view all of the files and/or folders in that
+        directory. And so forth, until a file is selected. If a file is selected, the available metadata corresponding to that file
+        will appear in a table and a "Download" button will appear. By clicking the "Download" button, the file will be downloaded
+        to your computer.
+    </p>
+    <p>
+
+    </p>
 {% endblock %}
 
 {% block content_dependent_styles %}

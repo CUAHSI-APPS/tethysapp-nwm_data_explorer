@@ -40,7 +40,16 @@ class NationalWaterModelDataExplorer(TethysAppBase):
                             controller='nwm_data_explorer.controllers_ajax.get_folder_contents'),
                     url_map(name='delete_temp_files',
                             url='nwm-data-explorer/.*/delete-temp-files',
-                            controller='nwm_data_explorer.controllers_ajax.delete_temp_files')
+                            controller='nwm_data_explorer.controllers_ajax.delete_temp_files'),
+                    url_map(name='api_get_files_list',
+                            url='nwm-data-explorer/api/GetFilesList',
+                            controller='nwm_data_explorer.api.api_get_files_list'),
+                    url_map(name='api_get_file',
+                            url='nwm-data-explorer/api/GetFile',
+                            controller='nwm_data_explorer.api.api_get_file'),
+                    url_map(name='api_get_file_metadata',
+                            url='nwm-data-explorer/api/GetFileMetadata',
+                            controller='nwm_data_explorer.api.api_get_file_metadata')
                     )
 
         return url_maps

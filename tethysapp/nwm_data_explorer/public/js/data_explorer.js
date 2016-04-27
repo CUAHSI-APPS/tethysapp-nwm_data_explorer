@@ -103,7 +103,7 @@ var $,
             }
         return e
     };
-
+    
     buildTable = function (a) {
         var e = document.createElement("table"),
             d, b;
@@ -135,8 +135,6 @@ var $,
             dataUnitsSwitchKey,
             dataUnitsSwitch,
             dataUnits;
-
-        // data = JSON.parse(data.query_data);
 
         //Format the fileSize to appropriate units (originally in bytes)
         dataSize = data.query_data.dataSize;
@@ -207,9 +205,9 @@ var $,
 
     getQueryType = function () {
         if (window.location.pathname.indexOf('files_explorer') !== -1) {
-            return 'filesystem'
+            return 'filesystem';
         }
-        return 'irods'
+        return 'irods';
     };
 
     dataQuery = function (queryType, selectionPath) {
@@ -227,9 +225,7 @@ var $,
                 console.log(jqXHR + '\n' + textStatus + '\n' + errorThrown);
             },
             success: function (data) {
-                var contents,
-                    newDropDownData,
-                    dropDownType;
+                var contents;
 
                 if (!data.hasOwnProperty('success')) {
                     if (data.hasOwnProperty('error')) {
@@ -249,18 +245,16 @@ var $,
     };
 
     isArray = function (a) {
-        return "[object Array]" === Object.prototype.toString.call(a)
+        return "[object Array]" === Object.prototype.toString.call(a);
     };
-
+    
     isEven = function (a) {
-        return 0 === a % 2
+        return 0 === a % 2;
     };
 
     processFileData = function (data, selectionPath, fileSource) {
-        var viewerButtonHref;
-
         if (fileSource === 'filesystem') {
-            downloadPath = '/static/nwm_data_explorer/temp_files/' + data.query_data.dataName
+            downloadPath = '/static/nwm_data_explorer/temp_files/' + data.query_data.dataName;
         } else {
             downloadPath = 'http://shawncrawley:shawncrawley@nfie.hydroshare.org:8080/irods-rest/rest/fileContents' +
                 selectionPath.slice(0, selectionPath.indexOf('?'));
@@ -313,8 +307,8 @@ var $,
      RUN ONCE DOCUMENT IS READY
      *************************/
     $(function () {
-        var $title = $('#title');
-        var $subtitle = $('#subtitle');
+        var $title = $('#title'),
+            $subtitle = $('#subtitle');
         initializeJqueryVariables();
         addInitialEventListeners();
         if (window.location.pathname.indexOf('files_explorer') !== -1) {

@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 import os
 from shutil import rmtree
-from utilities import data_query, get_temp_folder_path
+from utilities import data_query, get_temp_folder_path, get_server_origin
 
 
 def get_folder_contents(request):
@@ -10,7 +10,7 @@ def get_folder_contents(request):
     if request.method == 'GET':
         selection_path = request.GET['selection_path']
         query_type = request.GET['query_type']
-        query_data = data_query(query_type, selection_path, request.get_host())
+        query_data = data_query(query_type, selection_path, get_server_origin(request))
 
         if query_data == 'An error occured':
             return JsonResponse({

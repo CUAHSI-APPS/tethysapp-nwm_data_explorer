@@ -124,3 +124,9 @@ def get_temp_folder_path():
     this_file_path = getfile(currentframe())
     this_filename = os.path.basename(this_file_path)
     return this_file_path.replace(this_filename, 'public/temp_files')
+
+
+def get_server_origin(request):
+    protocol = 'https://' if request.is_secure() else 'http://'
+    host = request.get_host()
+    return protocol + host

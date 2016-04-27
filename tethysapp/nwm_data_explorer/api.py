@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
 
-from utilities import get_files_list, get_file_metadata, make_file_public
+from utilities import get_files_list, get_file_metadata, make_file_public, get_server_origin
 
 
 def api_get_files_list(request):
@@ -22,8 +22,8 @@ def api_get_file(request):
 
     if request.method == 'GET':
         if request.GET.get('filename'):
-            url = make_file_public('/projects/water/nwm/nwm_sample/' + request.GET['filename'], request.get_host())
-            print url
+            file_path = '/projects/water/nwm/nwm_sample/' + request.GET['filename']
+            url = make_file_public(file_path, get_server_origin(request))
             return redirect(url)
         else:
             json_data['status_code'] = 400

@@ -25,11 +25,11 @@ def data_explorer(request):
 
 
 @login_required()
-def api_info(request):
+def api(request):
     """
     Controller for the app info page.
     """
 
     context = {}
 
-    return render(request, 'nwm_data_explorer/api_info.html', context)
+    return render(request, 'nwm_data_explorer/api.html', context)

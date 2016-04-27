@@ -40,7 +40,6 @@ def api_get_file_metadata(request):
 
     if request.method == 'GET':
         if request.GET.get('filename'):
-            json_data['success'] = 'The request was successful.'
             json_data['reason_phrase'] = 'The request was successful.'
             json_data['content'] = get_file_metadata('/projects/water/nwm/nwm_sample/' + request.GET['filename'])
         else:

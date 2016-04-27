@@ -1,0 +1,83 @@
+{% extends "nwm_data_explorer/base.html" %}
+{% load staticfiles %}
+
+{% block app_content %}
+    <h1>Developers API</h1>
+    <p>
+        A Developers API is provided for those who wish to incorporate the National Water Model data into their own
+        separate application or script.
+    </p>
+    <p>The API endpoint is the current URL, <b>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api</b></p>
+    <h2>API Methods</h2>
+    <p>All API methods must be called using the following pattern:</p>
+    <p><b>endpoint/method/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
+    <p>Note: The presence of parameter key/value pairs depends on the method. See specific examples for each method below.</p>
+    <h3>GetFilesList</h3>
+    <table>
+        <tr>
+            <th>Supported Methods</th>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <th>Returns</th>
+            <td>A list of all available files in the NWM dataset</td>
+        </tr>
+        <tr>
+            <th>Params</th>
+            <td>None</td>
+        </tr>
+    </table>
+    <br>
+    <h5>Example:</h5>
+    <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFilesList</code>
+    <br><br>
+
+    <h3>GetFileMetadata</h3>
+    <table>
+        <tr>
+            <th>Supported Methods</th>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <th>Returns</th>
+            <td>Key/value pairs representing all of the available metadata for the specified file</td>
+        </tr>
+        <tr>
+            <th>Params</th>
+            <td>filename (the name of the file of interest, as it appears in the GetFilesList list)</td>
+        </tr>
+    </table>
+    <br>
+    <h5>Example:</h5>
+    <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    <br><br>
+
+    <h3>GetFile</h3>
+    <table>
+        <tr>
+            <th>Supported Methods</th>
+            <td>GET</td>
+        </tr>
+        <tr>
+            <th>Returns</th>
+            <td>A streaming download of the specified file</td>
+        </tr>
+        <tr>
+            <th>Params</th>
+            <td>filename (the name of the file of interest, as it appears in the GetFilesList list)</td>
+        </tr>
+    </table>
+    <br>
+    <h5>Example:</h5>
+    <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+{% endblock %}
+
+{% block content_dependent_styles %}
+    {{ block.super }}
+    <link href="{% static 'nwm_data_explorer/css/api.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'nwm_data_explorer/js/api.js' %}" type="text/javascript"></script>
+{% endblock %}

@@ -18,20 +18,22 @@ var $,
         /**jQuery Handles**/
         $dropDowns,
         $fileInfoDiv,
-        $downloadButton,
-        $displayStatus,
+        $btnDownload,
         /**Functions**/
         addInitialEventListeners,
+        alertUserOfError,
         buildArray,
         buildTable,
         clearFileInfo,
         encodeText,
-        formatJsonData,
+        formatFileMetadata,
+        modifyDownloadBtn,
+        processDataQueryResponse,
         getQueryType,
         dataQuery,
         isArray,
         isEven,
-        processFileData,
+        addFileMetadataToUI,
         initializeJqueryVariables,
         formatDropDown,
         formatDropdownOptions;
@@ -47,6 +49,7 @@ var $,
                 async: false
             });
         });
+
         $dropDowns.on('select2:select', '.contents', function (e) {
             var numElements,
                 selectionPath;
@@ -69,6 +72,31 @@ var $,
                 clearFileInfo();
             }
         });
+
+        $btnDownload.on('click', function () {
+            if ($(this).attr('data-explorerType') === 'irods') {
+                window.open($(this).attr('data-downloadPath'));
+            } else {
+                $.ajax({
+                    type: 'GET',
+                    url: 'download-file',
+                    dataType: 'json',
+                    data: {
+                        'selection_path': $(this).attr('data-selectionPath')
+                    },
+                    error: alertUserOfError,
+                    success: function (response) {
+                        if (response.hasOwnProperty('success')) {
+                            window.open($(this).attr('data-downloadPath'));
+                        }
+                    }.bind(this)
+                });
+            }
+        });
+    };
+
+    alertUserOfError = function (error) {
+        alert("Sorry! An error ocurred.");
     };
 
     buildArray = function (a) {
@@ -103,7 +131,7 @@ var $,
             }
         return e
     };
-    
+
     buildTable = function (a) {
         var e = document.createElement("table"),
             d, b;
@@ -122,7 +150,7 @@ var $,
 
     clearFileInfo = function () {
         $fileInfoDiv.empty();
-        $downloadButton.addClass('hidden');
+        $btnDownload.addClass('hidden');
         $fileInfoDiv.resize();
     };
 
@@ -130,14 +158,14 @@ var $,
         return $("<div />").text(a).html()
     };
 
-    formatJsonData = function (data) {
+    formatFileMetadata = function (data) {
         var dataSize,
             dataUnitsSwitchKey,
             dataUnitsSwitch,
             dataUnits;
 
         //Format the fileSize to appropriate units (originally in bytes)
-        dataSize = data.query_data.dataSize;
+        dataSize = data.dataSize;
         dataUnitsSwitchKey = 0;
         while (dataSize > 999) {
             dataSize /= 1000;
@@ -155,22 +183,77 @@ var $,
             return options[dataUnitsSwitchKey];
         };
         dataUnits = dataUnitsSwitch(dataUnitsSwitchKey);
-        data.query_data.dataSize = dataSize.toFixed(2).toString() + " " + dataUnits;
+        data.dataSize = dataSize.toFixed(2).toString() + " " + dataUnits;
 
         //Format the date (originally in milliseconds)
-        if (data.query_data.hasOwnProperty('createdAt')) {
-            data.query_data.createdAt = new Date(data.query_data.createdAt).toUTCString();
+        if (data.hasOwnProperty('createdAt')) {
+            data.createdAt = new Date(data.createdAt).toUTCString();
         }
-        if (data.query_data.hasOwnProperty('updatedAt')) {
-            data.query_data.updatedAt = new Date(data.query_data.updatedAt).toUTCString();
+        if (data.hasOwnProperty('updatedAt')) {
+            data.updatedAt = new Date(data.updatedAt).toUTCString();
         }
-        if (data.query_data.hasOwnProperty('accessedAt')) {
-            data.query_data.accessedAt = new Date(data.query_data.accessedAt).toUTCString();
+        if (data.hasOwnProperty('accessedAt')) {
+            data.accessedAt = new Date(data.accessedAt).toUTCString();
         }
 
-        //Build a table of the json data and place it in the file info html element
+        return data;
+    };
+
+    getQueryType = function () {
+        if (window.location.pathname.indexOf('files_explorer') !== -1) {
+            return 'filesystem';
+        }
+        return 'irods';
+    };
+
+    dataQuery = function (queryType, selectionPath) {
+        $.ajax({
+            type: 'GET',
+            url: 'get-folder-contents',
+            dataType: 'json',
+            data: {
+                'selection_path': selectionPath,
+                'query_type': queryType
+            },
+            error: alertUserOfError,
+            success: function (response) {
+                processDataQueryResponse(response, selectionPath, queryType);
+            }
+        });
+    };
+
+    isArray = function (a) {
+        return "[object Array]" === Object.prototype.toString.call(a);
+    };
+
+    isEven = function (a) {
+        return 0 === a % 2;
+    };
+
+    processDataQueryResponse = function (response, selectionPath, queryType) {
+        var contents;
+
+        if (!response.hasOwnProperty('success')) {
+            if (response.hasOwnProperty('error')) {
+                alertUserOfError(response.error);
+            }
+        } else {
+            contents = response.query_data.contents;
+            if (contents) {
+                // The selection was a folder/directory
+                $dropDowns.append(contents);
+                formatDropDown();
+            } else {
+                // The selection was a file
+                addFileMetadataToUI(response.query_data);
+                modifyDownloadBtn(selectionPath, queryType, response.query_data.dataName);
+            }
+        }
+    };
+
+    addFileMetadataToUI = function (data) {
         $fileInfoDiv
-            .html(buildTable(data.query_data))
+            .html(buildTable(formatFileMetadata(data)))
             .prepend('<h3>File metadata:</h3>')
             .resize();
 
@@ -195,6 +278,7 @@ var $,
             newText = thisText.charAt(0).toUpperCase() + thisText.slice(1) + ":";
             $(this).text(newText);
         });
+
         //remove any attributes that are empty
         $('.td_row').each(function () {
             if (!($(this).html())) {
@@ -203,83 +287,27 @@ var $,
         });
     };
 
-    getQueryType = function () {
-        if (window.location.pathname.indexOf('files_explorer') !== -1) {
-            return 'filesystem';
-        }
-        return 'irods';
-    };
-
-    dataQuery = function (queryType, selectionPath) {
-        downloadPath = '';
-
-        $.ajax({
-            type: 'GET',
-            url: 'get-folder-contents',
-            dataType: 'json',
-            data: {
-                'selection_path': selectionPath,
-                'query_type': queryType
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR + '\n' + textStatus + '\n' + errorThrown);
-            },
-            success: function (data) {
-                var contents;
-
-                if (!data.hasOwnProperty('success')) {
-                    if (data.hasOwnProperty('error')) {
-                        alert(data.error);
-                    }
-                } else {
-                    contents = data.query_data.contents;
-                    if (contents) { //check to see if the files or folders attributes have data
-                        $dropDowns.append(contents); //create the new dropdown box with its file/folder options
-                        formatDropDown(); //format the dropdown with file or folder pictures accordingly
-                    } else { //if there wasn't any data in the files or folders attributes, the selection was a file
-                        processFileData(data, selectionPath, queryType);
-                    }
-                }
-            }
-        });
-    };
-
-    isArray = function (a) {
-        return "[object Array]" === Object.prototype.toString.call(a);
-    };
-    
-    isEven = function (a) {
-        return 0 === a % 2;
-    };
-
-    processFileData = function (data, selectionPath, fileSource) {
+    modifyDownloadBtn = function (selectionPath, fileSource, fileName) {
         if (fileSource === 'filesystem') {
-            downloadPath = '/static/nwm_data_explorer/temp_files/' + data.query_data.dataName;
+            downloadPath = '/static/nwm_data_explorer/temp_files/' + fileName;
         } else {
             downloadPath = 'http://shawncrawley:shawncrawley@nfie.hydroshare.org:8080/irods-rest/rest/fileContents' +
                 selectionPath.slice(0, selectionPath.indexOf('?'));
         }
 
-        try {
-            $downloadButton.off('click');
-        } catch (e) {
-            console.log(e);
-        }
-
-        $downloadButton.on('click', function () { //create a new click event to initialize the downloadPath variable
-            window.open(downloadPath);
+        $btnDownload.attr({
+            'data-downloadPath': downloadPath,
+            'data-selectionPath': selectionPath,
+            'data-explorerType': fileSource
         });
-        //show the appropriate buttons
-        $downloadButton.removeClass('hidden');
 
-        formatJsonData(data);
+        $btnDownload.removeClass('hidden');
     };
 
     initializeJqueryVariables = function () {
         $dropDowns = $('#drop-down');
         $fileInfoDiv = $('#file-info');
-        $downloadButton = $('#download-button');
-        $displayStatus = $('#display-status');
+        $btnDownload = $('#download-button');
     };
 
     formatDropDown = function () {
@@ -308,17 +336,22 @@ var $,
      *************************/
     $(function () {
         var $title = $('#title'),
-            $subtitle = $('#subtitle');
+            $subtitle = $('#subtitle'),
+            $link;
+
         initializeJqueryVariables();
         addInitialEventListeners();
         if (window.location.pathname.indexOf('files_explorer') !== -1) {
             $title.text('Filesystem Explorer');
             $subtitle.text('Browse the National Water Model data stored on the server');
             dataQuery('filesystem', '/projects/water/nwm/nwm_sample?folder');
+            $link = $('#link-filesystem');
         } else {
             $title.text('iRODS Explorer');
             $subtitle.text('Browse the National Water Model data stored in iRODS');
             dataQuery('irods', '/nfiehydroZone/home/public/nwm_sample?folder');
+            $link = $('#link-irods');
         }
+        $link.addClass('active');
     });
 }());

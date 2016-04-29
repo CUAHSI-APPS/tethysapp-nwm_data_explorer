@@ -2,7 +2,7 @@ from django.http import JsonResponse
 
 import os
 from shutil import rmtree
-from utilities import data_query, get_temp_folder_path, get_server_origin
+from utilities import data_query, get_temp_folder_path, get_server_origin, make_file_public, format_selection_path
 
 
 def get_folder_contents(request):
@@ -10,7 +10,7 @@ def get_folder_contents(request):
     if request.method == 'GET':
         selection_path = request.GET['selection_path']
         query_type = request.GET['query_type']
-        query_data = data_query(query_type, selection_path, get_server_origin(request))
+        query_data = data_query(query_type, selection_path)
 
         if query_data == 'An error occured':
             return JsonResponse({
@@ -21,6 +21,17 @@ def get_folder_contents(request):
                 'success': "Response successfully returned!",
                 'query_data': query_data
             })
+
+
+def download_file(request):
+    if request.method == 'GET' and request.is_ajax():
+        selection_path = request.GET['selection_path']
+        selection_path = format_selection_path(selection_path)
+        make_file_public(selection_path, get_server_origin(request))
+
+        return JsonResponse({
+            'success': 'File sucessfully made public.'
+        })
 
 
 def delete_temp_files(request):

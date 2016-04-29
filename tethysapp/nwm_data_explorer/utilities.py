@@ -4,15 +4,15 @@ from requests.auth import HTTPBasicAuth
 from pwd import getpwuid
 from shutil import copyfile
 from inspect import getfile, currentframe
+from json import loads
 
 
-def data_query(query_type, selection_path, host):
+def data_query(query_type, selection_path):
     response = None
     contents = []
 
     resource = 'collection' if '?folder' in selection_path else 'dataObject'
-    object_type_index = selection_path.rfind('?')
-    selection_path = selection_path[0:object_type_index]
+    selection_path = format_selection_path(selection_path)
 
     if query_type == 'filesystem':
         if os.path.exists(selection_path):
@@ -26,7 +26,6 @@ def data_query(query_type, selection_path, host):
                     contents.append(select_option)
             else:
                 query_data = get_file_metadata(selection_path)
-                make_file_public(selection_path, host)
                 return query_data
 
     else:
@@ -77,6 +76,10 @@ def data_query(query_type, selection_path, host):
                 return query_data
             else:
                 query_data = response if response else "An error occured"
+                # if response:
+                #     query_data = build_table_from_json(response)
+                # else:
+                #     query_data = "An error occured"
                 return query_data
 
     if contents:
@@ -130,3 +133,18 @@ def get_server_origin(request):
     protocol = 'https://' if request.is_secure() else 'http://'
     host = request.get_host()
     return protocol + host
+
+
+def build_table_from_json(json_obj):
+    html = '<table><tr><th>'
+    if type(json_obj) != object:
+        json_obj = loads(json_obj)
+    for key in json_obj:
+        pass
+
+    return html
+
+
+def format_selection_path(selection_path):
+    object_type_index = selection_path.rfind('?')
+    return selection_path[0:object_type_index]

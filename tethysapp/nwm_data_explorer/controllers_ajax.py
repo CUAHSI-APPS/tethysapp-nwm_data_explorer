@@ -1,8 +1,8 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 
 import os
 from shutil import rmtree
-from utilities import data_query, get_temp_folder_path, get_server_origin, make_file_public, format_selection_path
+from utilities import data_query, get_temp_folder_path, get_server_origin, make_file_public, format_selection_path, zip_files, temp_dir
 
 
 def get_folder_contents(request):
@@ -35,12 +35,25 @@ def download_file(request):
         })
 
 
+def download_files(request):
+    if request.method == 'GET' and request.is_ajax():
+        selection_paths = request.GET['selection_paths'].split(',')
+        zip_path = zip_files(selection_paths)
+
+        response = FileResponse(open(path, 'rb'), content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename="' + 'nwm_data.zip"'
+        response['Content-Length'] = os.path.getsize(zip_path)
+
+        return response
+
+
 def delete_temp_files(request):
     if request.method == 'GET' and request.is_ajax():
         temp_folder_path = get_temp_folder_path()
         if os.path.exists(temp_folder_path):
             rmtree(temp_folder_path)
-
+        if os.path.exists(temp_dir):
+            rmtree(temp_dir)
         return JsonResponse({
             'success': 'Temp folder successfully deleted.'
         })

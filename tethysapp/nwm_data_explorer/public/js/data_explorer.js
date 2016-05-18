@@ -7,7 +7,8 @@ var $,
     formatDropDown,
     filtersList,
     lastQuerySelectionPath,
-    fsPath = '/projects/water/nwm/data?folder',
+    fsPath = '/projects/water/nwm/nwm_sample?folder',
+// fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
 (function () {
@@ -22,6 +23,7 @@ var $,
         $dropDowns,
         $fileInfoDiv,
         $btnDownload,
+        $btnDownloadAll,
         /**Functions**/
         addInitialEventListeners,
         alertUserOfError,
@@ -35,6 +37,7 @@ var $,
         processDataQueryResponse,
         updateFiltersList,
         getQueryType,
+        prepareDownloadAllButton,
         queryData,
         isArray,
         isEven,
@@ -81,9 +84,7 @@ var $,
             } else {
                 updateFiltersList();
                 $('.contents').last().nextAll().remove();
-                if (!($fileInfoDiv.is(':empty'))) {
-                    clearFileInfo();
-                }
+                clearFileInfo();
                 queryData(getQueryType(), lastQuerySelectionPath);
             }
         });
@@ -121,17 +122,13 @@ var $,
             selectionPath = $(e.params.data.element).attr('data-path');
             lastQuerySelectionPath = selectionPath;
             queryData(getQueryType(), selectionPath);
-            if (!($fileInfoDiv.is(':empty'))) {
-                clearFileInfo();
-            }
+            clearFileInfo();
         });
 
         $dropDowns.on('select2:unselect', '.contents', function () {
             $('[aria-expanded=true]').parent().parent().remove();
             $(this).next().nextAll().remove();
-            if (!($fileInfoDiv.is(':empty'))) {
-                clearFileInfo();
-            }
+            clearFileInfo();
         });
 
         $btnDownload.on('click', function () {
@@ -212,6 +209,7 @@ var $,
     clearFileInfo = function () {
         $fileInfoDiv.empty();
         $btnDownload.addClass('hidden');
+        $btnDownloadAll.addClass('hidden');
         $fileInfoDiv.resize();
     };
 
@@ -282,6 +280,19 @@ var $,
         return 'irods';
     };
 
+    prepareDownloadAllButton = function () {
+        var selectionPaths = [];
+        $('.contents').last().find('option').each(function(i, obj) {
+            if (i > 0) {
+                selectionPaths.push($(obj).attr('data-path'));
+            }
+        });
+        downloadUrl = 'download-files?' + selectionPaths.join(',');
+        $btnDownloadAll
+            .attr('href', downloadUrl)
+            .removeClass('hidden');
+    };
+
     queryData = function (queryType, selectionPath) {
         $.ajax({
             type: 'GET',
@@ -320,6 +331,9 @@ var $,
                 // The selection was a folder/directory
                 $dropDowns.append(contents);
                 formatDropDown();
+                if (!response.query_data.contains_folder && filtersList.length > 0) {
+                    prepareDownloadAllButton();
+                }
             } else {
                 // The selection was a file
                 addFileMetadataToUI(response.query_data);
@@ -425,7 +439,8 @@ var $,
     initializeJqueryVariables = function () {
         $dropDowns = $('#drop-down');
         $fileInfoDiv = $('#file-info');
-        $btnDownload = $('#download-button');
+        $btnDownload = $('#btn-download-one');
+        $btnDownloadAll = $('#btn-download-all');
     };
 
     formatDropDown = function () {

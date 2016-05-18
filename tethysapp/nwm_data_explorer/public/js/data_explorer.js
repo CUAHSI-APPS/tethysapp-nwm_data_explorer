@@ -6,7 +6,9 @@
 var $,
     formatDropDown,
     filtersList,
-    lastQuerySelectionPath;
+    lastQuerySelectionPath,
+    fsPath = '/projects/water/nwm/data?folder',
+    irodsPath = '/nwmZone/home/nwm/data?folder';
 
 (function () {
     'use strict';
@@ -444,14 +446,14 @@ var $,
         if (window.location.pathname.indexOf('files_explorer') !== -1) {
             $title.text('Filesystem Explorer');
             $subtitle.text('Browse the National Water Model data stored on the server');
-            queryData('filesystem', '/projects/water/nwm/nwm_sample?folder');
-            lastQuerySelectionPath = '/projects/water/nwm/nwm_sample?folder';
+            queryData('filesystem', fsPath);
+            lastQuerySelectionPath = fsPath;
             $link = $('#link-filesystem');
         } else {
             $title.text('iRODS Explorer');
             $subtitle.text('Browse the National Water Model data stored in iRODS');
-            queryData('irods', '/nwmZone/home/nwm/data?folder');
-            lastQuerySelectionPath = '/nwmZone/home/nwm/data?folder';
+            queryData('irods', irodsPath);
+            lastQuerySelectionPath = irodsPath;
             $link = $('#link-irods');
         }
         $link.addClass('active');

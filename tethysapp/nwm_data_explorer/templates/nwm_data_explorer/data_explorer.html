@@ -4,14 +4,40 @@
 {% block app_content %}
     <h1 id="title"></h1>
     <h4 id="subtitle"></h4>
+    <span id="btn-filter-options" class="contracted">Filter Options:</span>
+    <div id="filter-options" hidden>
+        <label for="slct-types">Show types:</label>
+        <select multiple id="slct-types" class="filter-slct">
+            <option value="all" selected>All</option>
+            <option value="channel_rt">channel_rt</option>
+            <option value="land">land</option>
+            <option value="reservoir">reservoir</option>
+            <option value="terrain_rt">terrain_rt</option>
+        </select>
+        <br><br>
+        <label for="slct-hours">Show hours:</label>
+        <select multiple id="slct-hours" class="filter-slct">
+            <option value="all" selected>All</option>
+            {% for i in hours %}
+                <option value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="chkbx-georef">Show Georeferenced:</label>
+        <input type="checkbox" id="chkbx-georef" checked>
+        <br><br>
+        <button type="button" class="btn btn-med btn-primary" id="btn-apply-filters">Apply Filters</button>
+    </div>
+    <br><br>
     <div id="drop-down"></div>
     <br><br>
     <div id="dynamic-content">
-    <span id="file-button-options">
+    <span id="download-content">
         <button type="button" class="btn btn-success btn-lg hidden" id="download-button">
             <span class="glyphicon download" aria-hidden="true"></span>
-            <img src="/static/nwm_data_explorer/images/download_icon.svg" class="button-icon"/> Download File
+            <img src="/static/nwm_data_explorer/images/download_icon.svg" class="button-icon"/> Download
         </button>
+{#        <span id="download-info"></span>#}
     </span>
         <br><br>
         <div id="file-info">

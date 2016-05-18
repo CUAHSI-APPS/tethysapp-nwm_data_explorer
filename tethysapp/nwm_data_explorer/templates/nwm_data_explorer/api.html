@@ -12,7 +12,7 @@
     <p>All API methods must be called using the following pattern:</p>
     <p><b>endpoint/method/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
     <p>Note: The presence of parameter key/value pairs depends on the method. See specific examples for each method below.</p>
-    <h3>GetFilesList</h3>
+    <h3>GetFileList</h3>
     <table>
         <tr>
             <th>Supported Methods</th>
@@ -29,7 +29,9 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFilesList</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList</code>
+    </a>
     <br><br>
 
     <h3>GetFileMetadata</h3>
@@ -44,12 +46,14 @@
         </tr>
         <tr>
             <th>Params</th>
-            <td>filename (the name of the file of interest, as it appears in the GetFilesList list)</td>
+            <td>filename (the name of the file of interest, as it appears in the GetFileList result)</td>
         </tr>
     </table>
     <br>
     <h5>Example:</h5>
-    <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    </a>
     <br><br>
 
     <h3>GetFile</h3>
@@ -64,12 +68,14 @@
         </tr>
         <tr>
             <th>Params</th>
-            <td>filename (the name of the file of interest, as it appears in the GetFilesList list)</td>
+            <td>filename (the name of the file of interest, as it appears in the GetFileList result)</td>
         </tr>
     </table>
     <br>
     <h5>Example:</h5>
-    <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    </a>
 {% endblock %}
 
 {% block content_dependent_styles %}

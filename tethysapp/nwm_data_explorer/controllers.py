@@ -19,7 +19,11 @@ def data_explorer(request):
     Controller for the app home page.
     """
 
-    context = {}
+    hours = range(0, 24)
+
+    context = {
+        'hours': hours
+    }
 
     return render(request, 'nwm_data_explorer/data_explorer.html', context)
 

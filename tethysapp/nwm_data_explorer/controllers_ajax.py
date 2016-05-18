@@ -10,7 +10,8 @@ def get_folder_contents(request):
     if request.method == 'GET':
         selection_path = request.GET['selection_path']
         query_type = request.GET['query_type']
-        query_data = data_query(query_type, selection_path)
+        filters_list = request.GET['filters_list'].split(',')
+        query_data = data_query(query_type, selection_path, filters_list)
 
         if query_data == 'An error occured':
             return JsonResponse({

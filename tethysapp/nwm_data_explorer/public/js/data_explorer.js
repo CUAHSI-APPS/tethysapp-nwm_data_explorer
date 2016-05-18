@@ -4,11 +4,12 @@
 
 /**GLOBAL VARIABLE IMPORTS**/
 var $,
-    formatDropDown;
+    formatDropDown,
+    filtersList,
+    lastQuerySelectionPath;
 
 (function () {
-    "use strict";
-
+    'use strict';
     /****************************************
      *******VARIABLES DECLARATIONS***********
      ****************************************/
@@ -25,12 +26,14 @@ var $,
         buildArray,
         buildTable,
         clearFileInfo,
+        createSelect2Objects,
         encodeText,
         formatFileMetadata,
         modifyDownloadBtn,
         processDataQueryResponse,
+        updateFiltersList,
         getQueryType,
-        dataQuery,
+        queryData,
         isArray,
         isEven,
         addFileMetadataToUI,
@@ -43,12 +46,50 @@ var $,
      *****************************************************/
     addInitialEventListeners = function () {
 
+        $('#btn-filter-options').on('click', function () {
+            if ($(this).hasClass('contracted')) {
+                $(this)
+                    .removeClass('contracted')
+                    .addClass('expanded');
+                $('#filter-options').slideDown();
+            } else {
+                $(this)
+                    .removeClass('expanded')
+                    .addClass('contracted');
+                $('#filter-options').slideUp();
+            }
+        });
+
+        $('#btn-apply-filters').on('click', function () {
+            updateFiltersList();
+            $('.contents').last().nextAll().remove();
+            if (!($fileInfoDiv.is(':empty'))) {
+                clearFileInfo();
+            }
+            queryData(getQueryType(), lastQuerySelectionPath);
+        });
+
         window.addEventListener('beforeunload', function () {
             $.ajax({
                 url: 'delete-temp-files',
                 async: false
             });
         });
+
+        // $(document).on('select2:open', '.contents', function () {
+        //     $('.select2-search__field').attr('placeholder', 'Narrow the list with a search...');
+        // });
+        // $dropDowns.on('select2:open', '.contents', function () {
+        //     $('.select2-results__options li').each(function (ignore, obj) {
+        //         filtersList.forEach(function (filter) {
+        //             if ($(obj).attr('id').indexOf(filter) < -1) {
+        //                 $(obj).addClass('hidden');
+        //             } else {
+        //                 $(obj).removeClass('hidden');
+        //             }
+        //         });
+        //     });
+        // });
 
         $dropDowns.on('select2:select', '.contents', function (e) {
             var numElements,
@@ -59,7 +100,8 @@ var $,
                 $(this).next().nextAll().remove();
             }
             selectionPath = $(e.params.data.element).attr('data-path');
-            dataQuery(getQueryType(), selectionPath);
+            lastQuerySelectionPath = selectionPath;
+            queryData(getQueryType(), selectionPath);
             if (!($fileInfoDiv.is(':empty'))) {
                 clearFileInfo();
             }
@@ -95,8 +137,8 @@ var $,
         });
     };
 
-    alertUserOfError = function (error) {
-        alert("Sorry! An error ocurred.");
+    alertUserOfError = function () {
+        alert('Sorry! An error ocurred.');
     };
 
     buildArray = function (a) {
@@ -154,6 +196,21 @@ var $,
         $fileInfoDiv.resize();
     };
 
+    createSelect2Objects = function () {
+        $('#slct-hours').select2({
+            width: '100%',
+            placeholder: "Select all hours you want to show",
+            allowClear: true,
+            minimumResultsForSearch: Infinity
+        });
+        $('#slct-types').select2({
+            width: '100%',
+            placeholder: "Select all types you want to show",
+            allowClear: true,
+            minimumResultsForSearch: Infinity
+        });
+    };
+
     encodeText = function (a) {
         return $("<div />").text(a).html()
     };
@@ -206,14 +263,15 @@ var $,
         return 'irods';
     };
 
-    dataQuery = function (queryType, selectionPath) {
+    queryData = function (queryType, selectionPath) {
         $.ajax({
             type: 'GET',
             url: 'get-folder-contents',
             dataType: 'json',
             data: {
                 'selection_path': selectionPath,
-                'query_type': queryType
+                'query_type': queryType,
+                'filters_list': filtersList.join(',')
             },
             error: alertUserOfError,
             success: function (response) {
@@ -248,6 +306,47 @@ var $,
                 addFileMetadataToUI(response.query_data);
                 modifyDownloadBtn(selectionPath, queryType, response.query_data.dataName);
             }
+        }
+    };
+
+    updateFiltersList = function (initial) {
+        var $selectHours = $('#slct-hours');
+        var $selectTypes = $('#slct-types');
+        var selectedHoursList = $selectHours.val();
+        var selectedTypesList = $selectTypes.val();
+
+        filtersList = [];
+
+        if (!initial) {
+            if (selectedTypesList.indexOf('all') === -1) {
+                $selectTypes.find('option').each(function (i, opt) {
+                    if (i > 0) {  // Ignore 'All' option
+                        if (selectedTypesList.indexOf($(opt).text().toLowerCase()) === -1) {
+                            // If the current type isn't selected, add it to filtersList array
+                            filtersList.push($(opt).attr('value'));
+                        }
+                    }
+                });
+            }
+            if (selectedHoursList.indexOf('all') === -1) {
+                $selectHours.find('option').each(function (i, opt) {
+                    var val;
+                    if (i > 0) {  // Ignore 'All' option
+                        if (selectedHoursList.indexOf($(opt).text()) === -1) {
+                            // If the current hour isn't selected, add it to filtersList array
+                            val = $(opt).attr('value');
+                            if (Number(val) < 10) {
+                                filtersList.push('t0' + val + 'z');
+                            } else {
+                                filtersList.push('t' + val + 'z');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        if (!$('#chkbx-georef').is(':checked')) {
+            filtersList.push('georeferenced');
         }
     };
 
@@ -291,7 +390,7 @@ var $,
         if (fileSource === 'filesystem') {
             downloadPath = '/static/nwm_data_explorer/temp_files/' + fileName;
         } else {
-            downloadPath = 'http://shawncrawley:shawncrawley@nfie.hydroshare.org:8080/irods-rest/rest/fileContents' +
+            downloadPath = 'http://nwm-reader:nwmreader@nfie.hydroshare.org:8080/irods-rest/rest/fileContents' +
                 selectionPath.slice(0, selectionPath.indexOf('?'));
         }
 
@@ -314,7 +413,7 @@ var $,
         $('.contents:last-child').select2({
             placeholder: "Select a file/folder",
             allowClear: true,
-            minimumResultsForSearch: 7,
+            minimumResultsForSearch: Infinity,
             templateResult: formatDropdownOptions,
             templateSelection: formatDropdownOptions
         });
@@ -324,7 +423,7 @@ var $,
         if (!state.id) {
             return state.text;
         }
-        if ($(state.element).attr('data-path').indexOf("?folder") !== -1) {
+        if ($(state.element).attr('data-path').indexOf('?folder') !== -1) {
             return $('<span><img src="/static/nfie_irods_explorer/images/dir_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
         }
         return $('<span><img src="/static/nfie_irods_explorer/images/file_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
@@ -341,17 +440,21 @@ var $,
 
         initializeJqueryVariables();
         addInitialEventListeners();
+        updateFiltersList(true);
         if (window.location.pathname.indexOf('files_explorer') !== -1) {
             $title.text('Filesystem Explorer');
             $subtitle.text('Browse the National Water Model data stored on the server');
-            dataQuery('filesystem', '/projects/water/nwm/nwm_sample?folder');
+            queryData('filesystem', '/projects/water/nwm/nwm_sample?folder');
+            lastQuerySelectionPath = '/projects/water/nwm/nwm_sample?folder';
             $link = $('#link-filesystem');
         } else {
             $title.text('iRODS Explorer');
             $subtitle.text('Browse the National Water Model data stored in iRODS');
-            dataQuery('irods', '/nfiehydroZone/home/public/nwm_sample?folder');
+            queryData('irods', '/nwmZone/home/nwm/data?folder');
+            lastQuerySelectionPath = '/nwmZone/home/nwm/data?folder';
             $link = $('#link-irods');
         }
         $link.addClass('active');
+        createSelect2Objects();
     });
 }());

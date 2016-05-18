@@ -29,3 +29,24 @@ td {
 .button-icon {
     height: 30px;
 }
+.filter-slct {
+    width: 100%;
+}
+.contracted::after {
+    content: ' >';
+    cursor: pointer;
+}
+.expanded::after {
+    content: ' v';
+    cursor: pointer;
+}
+#btn-filter-options {
+    cursor: pointer;
+    background-color: #e74c3c;
+    color: white;
+    padding: 5px;
+}
+#filter-options {
+    padding: 10px;
+    border: 2px solid #e74c3c;
+}

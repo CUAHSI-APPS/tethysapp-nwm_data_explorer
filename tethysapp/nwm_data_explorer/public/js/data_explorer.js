@@ -48,6 +48,17 @@ var $,
      *****************************************************/
     addInitialEventListeners = function () {
 
+        $('#slct-types, #slct-hours').on('select2:select', function (e) {
+            var selections = $(this).val();
+            var allIndex = selections.indexOf('all');
+            if (e.params.data.id === 'all' || ($(this).attr('id') === 'slct-types' && selections.length === 4 && allIndex === -1) || ($(this).attr('id') === 'slct-hours' && selections.length === 24 && allIndex === -1)) {
+                $(this).val(['all']).trigger("change");
+            } else if (selections.length > 1 && allIndex !== -1) {
+                selections.splice(allIndex, 1);
+                $(this).val(selections).trigger("change");
+            }
+        });
+
         $('#btn-filter-options').on('click', function () {
             if ($(this).hasClass('contracted')) {
                 $(this)
@@ -63,12 +74,18 @@ var $,
         });
 
         $('#btn-apply-filters').on('click', function () {
-            updateFiltersList();
-            $('.contents').last().nextAll().remove();
-            if (!($fileInfoDiv.is(':empty'))) {
-                clearFileInfo();
+            var selectedTypes = $('#slct-types').val();
+            var selectedHours = $('#slct-hours').val();
+            if (selectedTypes === null || selectedHours === null) {
+                alert('A filter input field was left blank. Filters not applied');
+            } else {
+                updateFiltersList();
+                $('.contents').last().nextAll().remove();
+                if (!($fileInfoDiv.is(':empty'))) {
+                    clearFileInfo();
+                }
+                queryData(getQueryType(), lastQuerySelectionPath);
             }
-            queryData(getQueryType(), lastQuerySelectionPath);
         });
 
         window.addEventListener('beforeunload', function () {

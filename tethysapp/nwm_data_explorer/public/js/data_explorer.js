@@ -291,7 +291,7 @@ var $,
                 selectionPaths.push(dataPath);
             }
         });
-        downloadUrl = 'download-files?selection_paths' + selectionPaths.join(',');
+        downloadUrl = 'download-files?selection_paths' + encodeURIComponent(selectionPaths.join(','));
         $btnDownloadAll
             .attr('href', downloadUrl)
             .removeClass('hidden');

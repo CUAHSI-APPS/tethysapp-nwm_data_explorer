@@ -7,8 +7,8 @@ var $,
     formatDropDown,
     filtersList,
     lastQuerySelectionPath,
-    fsPath = '/projects/water/nwm/nwm_sample?folder',
-// fsPath = '/projects/water/nwm/data?folder',
+    // fsPath = '/projects/water/nwm/nwm_sample?folder',
+    fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
 (function () {
@@ -282,12 +282,16 @@ var $,
 
     prepareDownloadAllButton = function () {
         var selectionPaths = [];
+        var downloadUrl;
+
         $('.contents').last().find('option').each(function(i, obj) {
             if (i > 0) {
-                selectionPaths.push($(obj).attr('data-path'));
+                var dataPath = $(obj).attr('data-path');
+                dataPath = dataPath.replace('?file', '');
+                selectionPaths.push(dataPath);
             }
         });
-        downloadUrl = 'download-files?' + selectionPaths.join(',');
+        downloadUrl = 'download-files?selection_paths' + selectionPaths.join(',');
         $btnDownloadAll
             .attr('href', downloadUrl)
             .removeClass('hidden');

@@ -36,7 +36,7 @@ def download_file(request):
 
 
 def download_files(request):
-    if request.method == 'GET' and request.is_ajax():
+    if request.method == 'GET':
         selection_paths = request.GET['selection_paths'].split(',')
         zip_path = zip_files(selection_paths)
 

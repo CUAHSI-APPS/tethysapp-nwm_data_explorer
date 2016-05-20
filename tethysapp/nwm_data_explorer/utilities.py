@@ -12,7 +12,7 @@ import random
 temp_dir = 'tmp/nwm_data'
 
 
-def data_query(query_type, selection_path, filters_list):
+def data_query(query_type, selection_path, filters_list, show_georef=None):
     response = None
     contents = []
     contains_folder = False
@@ -33,9 +33,12 @@ def data_query(query_type, selection_path, filters_list):
                         data_type = "file"
                     for filter_val in filters_list:
                         if filter_val != '':
-                            if str(filter_val) in str(f):
-                                filter_out = True
-                                break
+                            if filter_val == 'georeferenced' and show_georef:
+                                continue
+                            else:
+                                if str(filter_val) in str(f):
+                                    filter_out = True
+                                    break
                     if not filter_out:
                         select_option = '<option value="%s" class="%s" data-path="%s">%s</option>' % \
                                         (f, data_type, os.path.join(selection_path, f) + '?' + data_type, f)
@@ -176,7 +179,7 @@ def zip_files(selection_paths):
         os.mkdir(temp_dir)
 
     while os.path.exists(os.path.join(temp_dir, temp_file)):
-        temp_file = 'zip' + random.randint(0, 100000)
+        temp_file = 'zip' + str(random.randint(0, 100000))
 
     zip_path = os.path.join(temp_dir, temp_file)
 

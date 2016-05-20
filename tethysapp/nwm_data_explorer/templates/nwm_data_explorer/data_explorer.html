@@ -1,5 +1,6 @@
 {% extends "nwm_data_explorer/base.html" %}
 {% load staticfiles %}
+{% load tethys_gizmos %}
 
 {% block app_content %}
     <h1 id="title"></h1>
@@ -23,8 +24,9 @@
             {% endfor %}
         </select>
         <br><br>
-        <label for="chkbx-georef">Show Georeferenced:</label>
-        <input type="checkbox" id="chkbx-georef" checked>
+        {% gizmo toggle_switch toggle_georef %}
+        <br>
+        {% gizmo toggle_switch toggle_nongeoref %}
         <br><br>
         <button type="button" class="btn btn-med btn-primary" id="btn-apply-filters">Apply Filters</button>
     </div>

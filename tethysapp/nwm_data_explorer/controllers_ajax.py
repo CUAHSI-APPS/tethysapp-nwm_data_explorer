@@ -11,7 +11,9 @@ def get_folder_contents(request):
         selection_path = request.GET['selection_path']
         query_type = request.GET['query_type']
         filters_list = request.GET['filters_list'].split(',')
-        query_data = data_query(query_type, selection_path, filters_list)
+        if request.GET.get('show_georef'):
+            show_georef = request.GET['show_georef']
+        query_data = data_query(query_type, selection_path, filters_list, show_georef)
 
         if query_data == 'An error occured':
             return JsonResponse({
@@ -40,7 +42,7 @@ def download_files(request):
         selection_paths = request.GET['selection_paths'].split(',')
         zip_path = zip_files(selection_paths)
 
-        response = FileResponse(open(path, 'rb'), content_type='application/zip')
+        response = FileResponse(open(zip_path, 'rb'), content_type='application/zip')
         response['Content-Disposition'] = 'attachment; filename="' + 'nwm_data.zip"'
         response['Content-Length'] = os.path.getsize(zip_path)
 

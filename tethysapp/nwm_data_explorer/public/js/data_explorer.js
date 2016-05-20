@@ -6,8 +6,9 @@
 var $,
     formatDropDown,
     filtersList,
+    showGeoref = true,
     lastQuerySelectionPath,
-    // fsPath = '/projects/water/nwm/nwm_sample?folder',
+// fsPath = '/projects/water/nwm/nwm_sample?folder',
     fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
@@ -81,6 +82,8 @@ var $,
             var selectedHours = $('#slct-hours').val();
             if (selectedTypes === null || selectedHours === null) {
                 alert('A filter input field was left blank. Filters not applied');
+            } else if (!$('#toggle-georef').is(':checked') && !$('#toggle-nongeoref').is(':checked')) {
+                alert('Both georeferenced and non-georeferenced cannot be hidden');
             } else {
                 updateFiltersList();
                 $('.contents').last().nextAll().remove();
@@ -291,7 +294,7 @@ var $,
                 selectionPaths.push(dataPath);
             }
         });
-        downloadUrl = 'download-files?selection_paths' + encodeURIComponent(selectionPaths.join(','));
+        downloadUrl = 'download-files?selection_paths=' + encodeURIComponent(selectionPaths.join(','));
         $btnDownloadAll
             .attr('href', downloadUrl)
             .removeClass('hidden');
@@ -305,7 +308,8 @@ var $,
             data: {
                 'selection_path': selectionPath,
                 'query_type': queryType,
-                'filters_list': filtersList.join(',')
+                'filters_list': filtersList.join(','),
+                'show_georef': showGeoref
             },
             error: alertUserOfError,
             success: function (response) {
@@ -381,9 +385,17 @@ var $,
                     }
                 });
             }
-        }
-        if (!$('#chkbx-georef').is(':checked')) {
-            filtersList.push('georeferenced');
+            if (!$('#toggle-georef').is(':checked')) {
+                filtersList.push('georeferenced');
+                showGeoref = false;
+            }
+            if (!$('#toggle-nongeoref').is(':checked')) {
+                filtersList.push('georeferenced');
+                showGeoref = true;
+            }
+            if ($('#toggle-georef').is(':checked') && $('#toggle-nongeoref').is(':checked')) {
+                showGeoref = null;
+            }
         }
     };
 

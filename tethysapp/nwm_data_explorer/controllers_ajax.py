@@ -12,7 +12,7 @@ def get_folder_contents(request):
         query_type = request.GET['query_type']
         filters_list = request.GET['filters_list'].split(',')
         if request.GET.get('show_georef'):
-            show_georef = request.GET['show_georef']
+            show_georef = True if str(request.GET['show_georef']) == 'true' else False
         else:
             show_georef = None
         query_data = data_query(query_type, selection_path, filters_list, show_georef)

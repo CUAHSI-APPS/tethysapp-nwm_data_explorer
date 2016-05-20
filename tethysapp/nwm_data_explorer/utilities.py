@@ -33,9 +33,11 @@ def data_query(query_type, selection_path, filters_list, show_georef=None):
                         data_type = "file"
                     for filter_val in filters_list:
                         if filter_val != '':
+                            print show_georef
                             if filter_val == 'georeferenced' and show_georef is True:
                                 if str(filter_val) not in str(f):
                                     filter_out = True
+                                    break
                             else:
                                 if str(filter_val) in str(f):
                                     filter_out = True
@@ -174,7 +176,7 @@ def format_selection_path(selection_path):
 
 def zip_files(selection_paths):
     global temp_dir
-    temp_file = 'zip' + random.randint(0, 100000)
+    temp_file = 'zip' + str(random.randint(0, 100000))
 
     if not os.path.exists(temp_dir):
         os.mkdir(temp_dir)

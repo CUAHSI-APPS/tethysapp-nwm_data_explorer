@@ -33,8 +33,9 @@ def data_query(query_type, selection_path, filters_list, show_georef=None):
                         data_type = "file"
                     for filter_val in filters_list:
                         if filter_val != '':
-                            if filter_val == 'georeferenced' and show_georef:
-                                continue
+                            if filter_val == 'georeferenced' and show_georef is True:
+                                if str(filter_val) not in str(f):
+                                    filter_out = True
                             else:
                                 if str(filter_val) in str(f):
                                     filter_out = True

@@ -6,7 +6,7 @@
 var $,
     formatDropDown,
     filtersList,
-    showGeoref = true,
+    showGeoref,
     lastQuerySelectionPath,
 // fsPath = '/projects/water/nwm/nwm_sample?folder',
     fsPath = '/projects/water/nwm/data?folder',
@@ -385,16 +385,17 @@ var $,
                     }
                 });
             }
-            if (!$('#toggle-georef').is(':checked')) {
+            if ($('#toggle-georef').is(':checked') && $('#toggle-nongeoref').is(':checked')) {
+                // Show both georeferenced and non-georeferenced
+                showGeoref = null;
+            } else if (!$('#toggle-georef').is(':checked')) {
+                // Hide georeferenced (only show non-georeferenced)
                 filtersList.push('georeferenced');
                 showGeoref = false;
-            }
-            if (!$('#toggle-nongeoref').is(':checked')) {
+            } else if (!$('#toggle-nongeoref').is(':checked')) {
+                // Hide non-georeferenced files (Only show georeferenced)
                 filtersList.push('georeferenced');
                 showGeoref = true;
-            }
-            if ($('#toggle-georef').is(':checked') && $('#toggle-nongeoref').is(':checked')) {
-                showGeoref = null;
             }
         }
     };

@@ -9,7 +9,7 @@ from json import loads
 import zipfile
 import random
 
-temp_dir = 'tmp/nwm_data'
+temp_dir = '/tmp/nwm_data'
 
 
 def data_query(query_type, selection_path, filters_list, show_georef=None):
@@ -31,17 +31,18 @@ def data_query(query_type, selection_path, filters_list, show_georef=None):
                         contains_folder = True
                     else:
                         data_type = "file"
-                    for filter_val in filters_list:
-                        if filter_val != '':
-                            print show_georef
-                            if filter_val == 'georeferenced' and show_georef is True:
-                                if str(filter_val) not in str(f):
-                                    filter_out = True
-                                    break
-                            else:
-                                if str(filter_val) in str(f):
-                                    filter_out = True
-                                    break
+                    if data_type == 'file':
+                        for filter_val in filters_list:
+                            if filter_val != '':
+                                print show_georef
+                                if filter_val == 'georeferenced' and show_georef is True:
+                                    if str(filter_val) not in str(f):
+                                        filter_out = True
+                                        break
+                                else:
+                                    if str(filter_val) in str(f):
+                                        filter_out = True
+                                        break
                     if not filter_out:
                         select_option = '<option data-filename="%s" class="%s" data-path="%s">%s</option>' % \
                                         (f, data_type, os.path.join(selection_path, f) + '?' + data_type, f)

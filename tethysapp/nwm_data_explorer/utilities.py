@@ -34,7 +34,6 @@ def data_query(query_type, selection_path, filters_list, show_georef=None):
                     if data_type == 'file':
                         for filter_val in filters_list:
                             if filter_val != '':
-                                print show_georef
                                 if filter_val == 'georeferenced' and show_georef is True:
                                     if str(filter_val) not in str(f):
                                         filter_out = True
@@ -172,7 +171,10 @@ def build_table_from_json(json_obj):
 
 def format_selection_path(selection_path):
     object_type_index = selection_path.rfind('?')
-    return selection_path[0:object_type_index]
+    if object_type_index == -1:
+        return selection_path
+    else:
+        return selection_path[0:object_type_index]
 
 
 def zip_files(directory, files):

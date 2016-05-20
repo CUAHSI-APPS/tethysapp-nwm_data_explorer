@@ -6,7 +6,6 @@ from utilities import data_query, get_temp_folder_path, get_server_origin, make_
 
 
 def get_folder_contents(request):
-    print "GETTING FOLDER CONTENTS"
     if request.method == 'GET':
         selection_path = request.GET['selection_path']
         query_type = request.GET['query_type']
@@ -29,14 +28,14 @@ def get_folder_contents(request):
 
 
 def download_file(request):
-    if request.method == 'GET' and request.is_ajax():
+    if request.method == 'GET':
         selection_path = request.GET['selection_path']
         selection_path = format_selection_path(selection_path)
-        make_file_public(selection_path, get_server_origin(request))
+        response = FileResponse(open(selection_path, 'rb'))
+        response['Content-Disposition'] = 'attachment; filename="' + os.path.basename(selection_path)
+        response['Content-Length'] = os.path.getsize(selection_path)
 
-        return JsonResponse({
-            'success': 'File sucessfully made public.'
-        })
+        return response
 
 
 def download_files(request):

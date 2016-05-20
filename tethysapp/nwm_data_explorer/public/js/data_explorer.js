@@ -10,7 +10,7 @@ var $,
     lastQuerySelectionPath,
     currentDirPath,
     fsPath = '/projects/water/nwm/nwm_sample?folder',
-    // fsPath = '/projects/water/nwm/data?folder',
+// fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
 (function () {
@@ -19,13 +19,12 @@ var $,
      *******VARIABLES DECLARATIONS***********
      ****************************************/
 
-    /**********General**********/
-    var downloadPath,
-        /**jQuery Handles**/
-        $dropDowns,
+    /**jQuery Handles**/
+    var $dropDowns,
         $fileInfoDiv,
         $btnDownload,
         $btnDownloadAll,
+        $downloadAll,
         /**Functions**/
         addInitialEventListeners,
         alertUserOfError,
@@ -52,6 +51,18 @@ var $,
      ***********FUNCTION INITIALIZATION*******************
      *****************************************************/
     addInitialEventListeners = function () {
+
+        $btnDownloadAll.on('click', function () {
+            var downloadUrl;
+            $('.contents').last().find('option').each(function (i, obj) {
+                if (i > 0) {
+                    var fileName = $(obj).attr('data-filename');
+                    fileName = fileName.replace('?file', '');
+                    downloadUrl = 'download-file?selection_path=' + encodeURIComponent(currentDirPath + '/' + fileName);
+                    window.open(downloadUrl);
+                }
+            });
+        });
 
         $('#slct-types, #slct-hours').on('select2:select', function (e) {
             var selections = $(this).val();
@@ -134,27 +145,6 @@ var $,
             $(this).next().nextAll().remove();
             clearFileInfo();
         });
-
-        $btnDownload.on('click', function () {
-            if ($(this).attr('data-explorerType') === 'irods') {
-                window.open($(this).attr('data-downloadPath'));
-            } else {
-                $.ajax({
-                    type: 'GET',
-                    url: 'download-file',
-                    dataType: 'json',
-                    data: {
-                        'selection_path': $(this).attr('data-selectionPath')
-                    },
-                    error: alertUserOfError,
-                    success: function (response) {
-                        if (response.hasOwnProperty('success')) {
-                            window.open($(this).attr('data-downloadPath'));
-                        }
-                    }.bind(this)
-                });
-            }
-        });
     };
 
     alertUserOfError = function () {
@@ -213,7 +203,7 @@ var $,
     clearFileInfo = function () {
         $fileInfoDiv.empty();
         $btnDownload.addClass('hidden');
-        $btnDownloadAll.addClass('hidden');
+        $downloadAll.addClass('hidden');
         $fileInfoDiv.resize();
     };
 
@@ -284,22 +274,22 @@ var $,
         return 'irods';
     };
 
-    prepareDownloadAllButton = function () {
-        var selectionFiles = [];
-        var downloadUrl;
-
-        $('.contents').last().find('option').each(function(i, obj) {
-            if (i > 0) {
-                var fileName = $(obj).attr('data-filename');
-                fileName = fileName.replace('?file', '');
-                selectionFiles.push(fileName);
-            }
-        });
-        downloadUrl = 'download-files?selection_dir=' + encodeURIComponent(currentDirPath) + '&files=' + encodeURIComponent(selectionFiles.join(','));
-        $btnDownloadAll
-            .attr('href', downloadUrl)
-            .removeClass('hidden');
-    };
+    // prepareDownloadAllButton = function () {
+    //     var selectionFiles = [];
+    //     var downloadUrl;
+    //
+    //     $('.contents').last().find('option').each(function (i, obj) {
+    //         if (i > 0) {
+    //             var fileName = $(obj).attr('data-filename');
+    //             fileName = fileName.replace('?file', '');
+    //             selectionFiles.push(fileName);
+    //         }
+    //     });
+    //     downloadUrl = 'download-files?selection_dir=' + encodeURIComponent(currentDirPath) + '&files=' + encodeURIComponent(selectionFiles.join(','));
+    //     $btnDownloadAll
+    //         .attr('href', downloadUrl)
+    //         .removeClass('hidden');
+    // };
 
     queryData = function (queryType, selectionPath) {
         $.ajax({
@@ -342,12 +332,13 @@ var $,
                 $dropDowns.append(contents);
                 formatDropDown();
                 if (!response.query_data.contains_folder && filtersList.length > 0) {
-                    prepareDownloadAllButton();
+                    $downloadAll.removeClass('hidden');
+                    // prepareDownloadAllButton();
                 }
             } else {
                 // The selection was a file
                 addFileMetadataToUI(response.query_data);
-                modifyDownloadBtn(selectionPath, queryType, response.query_data.dataName);
+                modifyDownloadBtn(selectionPath, queryType);
             }
         }
     };
@@ -438,21 +429,18 @@ var $,
         });
     };
 
-    modifyDownloadBtn = function (selectionPath, fileSource, fileName) {
+    modifyDownloadBtn = function (selectionPath, fileSource) {
+        var downloadUrl;
+
         if (fileSource === 'filesystem') {
-            downloadPath = '/static/nwm_data_explorer/temp_files/' + fileName;
+            downloadUrl = 'download-file?selection_path=' + encodeURIComponent(selectionPath);
         } else {
-            downloadPath = 'http://nwm-reader:nwmreader@nfie.hydroshare.org:8080/irods-rest/rest/fileContents' +
+            downloadUrl = 'http://nwm-reader:nwmreader@nfie.hydroshare.org:8080/irods-rest/rest/fileContents' +
                 selectionPath.slice(0, selectionPath.indexOf('?'));
         }
 
-        $btnDownload.attr({
-            'data-downloadPath': downloadPath,
-            'data-selectionPath': selectionPath,
-            'data-explorerType': fileSource
-        });
-
-        $btnDownload.removeClass('hidden');
+        $btnDownload.attr({'href': downloadUrl})
+            .removeClass('hidden');
     };
 
     initializeJqueryVariables = function () {
@@ -460,6 +448,7 @@ var $,
         $fileInfoDiv = $('#file-info');
         $btnDownload = $('#btn-download-one');
         $btnDownloadAll = $('#btn-download-all');
+        $downloadAll = $('#download-all');
     };
 
     formatDropDown = function () {

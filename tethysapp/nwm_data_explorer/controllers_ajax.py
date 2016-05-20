@@ -41,8 +41,9 @@ def download_file(request):
 
 def download_files(request):
     if request.method == 'GET':
-        selection_paths = request.GET['selection_paths'].split(',')
-        zip_path = zip_files(selection_paths)
+        selection_dir = str(request.GET['selection_dir'])
+        files = request.GET['files'].split(',')
+        zip_path = zip_files(selection_dir, files)
 
         response = FileResponse(open(zip_path, 'rb'), content_type='application/zip')
         response['Content-Disposition'] = 'attachment; filename="' + 'nwm_data.zip"'

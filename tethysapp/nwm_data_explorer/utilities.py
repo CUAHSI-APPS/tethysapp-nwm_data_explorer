@@ -43,7 +43,7 @@ def data_query(query_type, selection_path, filters_list, show_georef=None):
                                     filter_out = True
                                     break
                     if not filter_out:
-                        select_option = '<option value="%s" class="%s" data-path="%s">%s</option>' % \
+                        select_option = '<option data-filename="%s" class="%s" data-path="%s">%s</option>' % \
                                         (f, data_type, os.path.join(selection_path, f) + '?' + data_type, f)
                         contents.append(select_option)
             else:
@@ -174,7 +174,7 @@ def format_selection_path(selection_path):
     return selection_path[0:object_type_index]
 
 
-def zip_files(selection_paths):
+def zip_files(directory, files):
     global temp_dir
     temp_file = 'zip' + str(random.randint(0, 100000))
 
@@ -187,8 +187,8 @@ def zip_files(selection_paths):
     zip_path = os.path.join(temp_dir, temp_file)
 
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED, False) as zip_object:
-            for each_path in selection_paths:
-                zip_object.write(each_path, os.path.basename(each_path))
+            for each_file in files:
+                zip_object.write(os.path.join(directory, each_file), each_file)
             zip_object.close()
 
     return zip_path

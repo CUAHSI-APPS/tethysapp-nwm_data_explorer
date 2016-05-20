@@ -8,6 +8,7 @@ var $,
     filtersList,
     showGeoref,
     lastQuerySelectionPath,
+    currentDirPath,
     fsPath = '/projects/water/nwm/nwm_sample?folder',
     // fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
@@ -284,17 +285,17 @@ var $,
     };
 
     prepareDownloadAllButton = function () {
-        var selectionPaths = [];
+        var selectionFiles = [];
         var downloadUrl;
 
         $('.contents').last().find('option').each(function(i, obj) {
             if (i > 0) {
-                var dataPath = $(obj).attr('data-path');
-                dataPath = dataPath.replace('?file', '');
-                selectionPaths.push(dataPath);
+                var fileName = $(obj).attr('data-filename');
+                fileName = fileName.replace('?file', '');
+                selectionFiles.push(fileName);
             }
         });
-        downloadUrl = 'download-files?selection_paths=' + encodeURIComponent(selectionPaths.join(','));
+        downloadUrl = 'download-files?selection_dir=' + encodeURIComponent(currentDirPath) + '&files=' + encodeURIComponent(selectionFiles.join(','));
         $btnDownloadAll
             .attr('href', downloadUrl)
             .removeClass('hidden');
@@ -334,6 +335,7 @@ var $,
                 alertUserOfError(response.error);
             }
         } else {
+            currentDirPath = selectionPath.replace('?folder', '');
             contents = response.query_data.contents;
             if (contents) {
                 // The selection was a folder/directory

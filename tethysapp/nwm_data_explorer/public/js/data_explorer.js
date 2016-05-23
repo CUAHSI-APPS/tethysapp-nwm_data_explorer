@@ -331,7 +331,7 @@ var $,
                 // The selection was a folder/directory
                 $dropDowns.append(contents);
                 formatDropDown();
-                if (!response.query_data.contains_folder && filtersList.length > 0) {
+                if (!response.query_data.contains_folder && filtersList.length > 0 && $('.contents').last().find('option').length > 1) {
                     $downloadAll.removeClass('hidden');
                     // prepareDownloadAllButton();
                 }

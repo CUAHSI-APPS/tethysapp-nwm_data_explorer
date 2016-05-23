@@ -108,7 +108,7 @@ def data_query(query_type, selection_path, filters_list, show_georef=None):
     if contents:
         contents.insert(0, '<select title="Select a file/folder" class="contents"><option></option>')
     else:
-        contents.append('<option>No content to display.</option>')
+        contents.append('<select title="Select a file/folder" class="contents"><option></option>')
     contents.append('</select>')
     contents = ''.join(contents)
 

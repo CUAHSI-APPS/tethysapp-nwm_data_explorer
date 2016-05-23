@@ -9,8 +9,8 @@ var $,
     showGeoref,
     lastQuerySelectionPath,
     currentDirPath,
-    fsPath = '/projects/water/nwm/nwm_sample?folder',
-// fsPath = '/projects/water/nwm/data?folder',
+    // fsPath = '/projects/water/nwm/nwm_sample?folder',
+    fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
 (function () {

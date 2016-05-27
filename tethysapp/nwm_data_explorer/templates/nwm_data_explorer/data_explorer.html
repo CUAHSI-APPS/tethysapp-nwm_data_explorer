@@ -24,17 +24,17 @@
             {% endfor %}
         </select>
         <br><br>
-        {% gizmo toggle_switch toggle_georef %}
-        {% gizmo toggle_switch toggle_nongeoref %}
         <label for="slct-longrange-member">Show long range members:</label>
         <select multiple id="slct-longrange-member" class="filter-slct">
             <option value="all" selected>All</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
+            <option value="_1.f">1</option>
+            <option value="_2.f">2</option>
+            <option value="_3.f">3</option>
+            <option value="_4.f">4</option>
         </select>
         <br><br>
+        {% gizmo toggle_switch toggle_georef %}
+        {% gizmo toggle_switch toggle_nongeoref %}
         <button type="button" class="btn btn-med btn-primary" id="btn-apply-filters">Apply Filters</button>
     </div>
     <br><br>

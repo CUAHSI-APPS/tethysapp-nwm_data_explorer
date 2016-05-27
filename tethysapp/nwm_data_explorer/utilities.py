@@ -1,8 +1,9 @@
+from django.http import FileResponse
+
 import os
 import requests
 from requests.auth import HTTPBasicAuth
 from pwd import getpwuid
-from shutil import copyfile
 from inspect import getfile, currentframe
 from json import loads
 
@@ -138,27 +139,10 @@ def get_file_metadata(selection_path):
     }
 
 
-def make_file_public(selection_path, host):
-    temp_folder_path = get_temp_folder_path()
-    if not os.path.exists(temp_folder_path):
-        os.mkdir(temp_folder_path)
-    file_name = os.path.basename(selection_path)
-    temp_file_path = os.path.join(temp_folder_path, file_name)
-    if not os.path.exists(temp_file_path):
-        copyfile(selection_path, temp_file_path)
-    return host + '/static/nwm_data_explorer/temp_files/' + file_name
-
-
 def get_temp_folder_path():
     this_file_path = getfile(currentframe())
     this_filename = os.path.basename(this_file_path)
     return this_file_path.replace(this_filename, 'public/temp_files')
-
-
-def get_server_origin(request):
-    protocol = 'https://' if request.is_secure() else 'http://'
-    host = request.get_host()
-    return protocol + host
 
 
 def build_table_from_json(json_obj):
@@ -197,3 +181,14 @@ def zip_files(directory, files):
             zip_object.close()
 
     return zip_path
+
+
+def get_file_response_object(file_path, content_type):
+    response = FileResponse(open(file_path, 'rb'), content_type=content_type)
+    if content_type is None:
+        response['Content-Disposition'] = 'attachment; filename="' + os.path.basename(file_path)
+    else:
+        response['Content-Disposition'] = 'attachment; filename="' + 'nwm_data.zip"'
+    response['Content-Length'] = os.path.getsize(file_path)
+
+    return response

@@ -1,8 +1,9 @@
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse
 
 import os
 from shutil import rmtree
-from utilities import data_query, get_temp_folder_path, get_server_origin, make_file_public, format_selection_path, zip_files, temp_dir
+from utilities import data_query, get_temp_folder_path, format_selection_path, zip_files, temp_dir, \
+    get_file_response_object
 
 
 def get_folder_contents(request):
@@ -31,11 +32,8 @@ def download_file(request):
     if request.method == 'GET':
         selection_path = request.GET['selection_path']
         selection_path = format_selection_path(selection_path)
-        response = FileResponse(open(selection_path, 'rb'))
-        response['Content-Disposition'] = 'attachment; filename="' + os.path.basename(selection_path)
-        response['Content-Length'] = os.path.getsize(selection_path)
 
-        return response
+        return get_file_response_object(selection_path, None)
 
 
 def download_files(request):
@@ -44,11 +42,7 @@ def download_files(request):
         files = request.GET['files'].split(',')
         zip_path = zip_files(selection_dir, files)
 
-        response = FileResponse(open(zip_path, 'rb'), content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename="' + 'nwm_data.zip"'
-        response['Content-Length'] = os.path.getsize(zip_path)
-
-        return response
+        return get_file_response_object(zip_path, 'application/zip')
 
 
 def delete_temp_files(request):

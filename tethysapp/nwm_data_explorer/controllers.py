@@ -19,6 +19,8 @@ def data_explorer(request):
     Controller for the app home page.
     """
 
+    hours = {}
+
     toggle_georef = ToggleSwitch(display_text='Georeferenced',
                                  name='toggle-georef',
                                  on_label='Show',
@@ -36,7 +38,13 @@ def data_explorer(request):
                                     off_style='danger',
                                     initial=True,
                                     size='small')
-    hours = range(0, 24)
+    vals = range(0, 24)
+
+    for val in vals:
+        if val < 10:
+            hours[val] = 't0' + str(val) + 'z'
+        else:
+            hours[val] = 't' + str(val) + 'z'
 
     context = {
         'hours': hours,

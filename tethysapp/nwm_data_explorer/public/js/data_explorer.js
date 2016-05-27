@@ -64,7 +64,7 @@ var $,
             });
         });
 
-        $('#slct-types, #slct-hours').on('select2:select', function (e) {
+        $('.filter-slct').on('select2:select', function (e) {
             var selections = $(this).val();
             var allIndex = selections.indexOf('all');
             if (e.params.data.id === 'all' || ($(this).attr('id') === 'slct-types' && selections.length === 4 && allIndex === -1) || ($(this).attr('id') === 'slct-hours' && selections.length === 24 && allIndex === -1)) {
@@ -92,7 +92,8 @@ var $,
         $('#btn-apply-filters').on('click', function () {
             var selectedTypes = $('#slct-types').val();
             var selectedHours = $('#slct-hours').val();
-            if (selectedTypes === null || selectedHours === null) {
+            var selectedMembers = $('#slct-longrange-member').val();
+            if (selectedTypes === null || selectedHours === null || selectedMembers === null) {
                 alert('A filter input field was left blank. Filters not applied');
             } else if (!$('#toggle-georef').is(':checked') && !$('#toggle-nongeoref').is(':checked')) {
                 alert('Both georeferenced and non-georeferenced cannot be hidden');
@@ -110,21 +111,6 @@ var $,
                 async: false
             });
         });
-
-        // $(document).on('select2:open', '.contents', function () {
-        //     $('.select2-search__field').attr('placeholder', 'Narrow the list with a search...');
-        // });
-        // $dropDowns.on('select2:open', '.contents', function () {
-        //     $('.select2-results__options li').each(function (ignore, obj) {
-        //         filtersList.forEach(function (filter) {
-        //             if ($(obj).attr('id').indexOf(filter) < -1) {
-        //                 $(obj).addClass('hidden');
-        //             } else {
-        //                 $(obj).removeClass('hidden');
-        //             }
-        //         });
-        //     });
-        // });
 
         $dropDowns.on('select2:select', '.contents', function (e) {
             var numElements,
@@ -208,15 +194,9 @@ var $,
     };
 
     createSelect2Objects = function () {
-        $('#slct-hours').select2({
+        $('.filter-slct').select2({
             width: '100%',
-            placeholder: "Select all hours you want to show",
-            allowClear: true,
-            minimumResultsForSearch: Infinity
-        });
-        $('#slct-types').select2({
-            width: '100%',
-            placeholder: "Select all types you want to show",
+            placeholder: "Please make a selection",
             allowClear: true,
             minimumResultsForSearch: Infinity
         });
@@ -346,46 +326,40 @@ var $,
     updateFiltersList = function (initial) {
         var $selectHours = $('#slct-hours');
         var $selectTypes = $('#slct-types');
-        var selectedHoursList = $selectHours.val();
-        var selectedTypesList = $selectTypes.val();
+        var $selectMembers = $('#slct-longrange-member');
+        var $toggleGeoref = $('#toggle-georef');
+        var $toggleNongeoref = $('#toggle-nongeoref');
+
+        var addValsToFilterList = function ($slct) {
+            var selectedValsList = $slct.val();
+            if (selectedValsList.indexOf('all') === -1) {
+                $slct.find('option').each(function (i, opt) {
+                    if (i > 0) {  // Ignore 'All' option
+                        var val = $(opt).attr('value');
+                        if (selectedValsList.indexOf(val.toLowerCase()) === -1) {
+                            // If the current type isn't selected, add it to filtersList array
+                            filtersList.push(val);
+                        }
+                    }
+                });
+            }
+        };
 
         filtersList = [];
 
         if (!initial) {
-            if (selectedTypesList.indexOf('all') === -1) {
-                $selectTypes.find('option').each(function (i, opt) {
-                    if (i > 0) {  // Ignore 'All' option
-                        if (selectedTypesList.indexOf($(opt).text().toLowerCase()) === -1) {
-                            // If the current type isn't selected, add it to filtersList array
-                            filtersList.push($(opt).attr('value'));
-                        }
-                    }
-                });
-            }
-            if (selectedHoursList.indexOf('all') === -1) {
-                $selectHours.find('option').each(function (i, opt) {
-                    var val;
-                    if (i > 0) {  // Ignore 'All' option
-                        if (selectedHoursList.indexOf($(opt).text()) === -1) {
-                            // If the current hour isn't selected, add it to filtersList array
-                            val = $(opt).attr('value');
-                            if (Number(val) < 10) {
-                                filtersList.push('t0' + val + 'z');
-                            } else {
-                                filtersList.push('t' + val + 'z');
-                            }
-                        }
-                    }
-                });
-            }
-            if ($('#toggle-georef').is(':checked') && $('#toggle-nongeoref').is(':checked')) {
+            addValsToFilterList($selectTypes);
+            addValsToFilterList($selectHours);
+            addValsToFilterList($selectMembers);
+
+            if ($toggleGeoref.is(':checked') && $toggleNongeoref.is(':checked')) {
                 // Show both georeferenced and non-georeferenced
                 showGeoref = null;
-            } else if (!$('#toggle-georef').is(':checked')) {
+            } else if (!$toggleGeoref.is(':checked')) {
                 // Hide georeferenced (only show non-georeferenced)
                 filtersList.push('georeferenced');
                 showGeoref = false;
-            } else if (!$('#toggle-nongeoref').is(':checked')) {
+            } else if (!$toggleNongeoref.is(':checked')) {
                 // Hide non-georeferenced files (Only show georeferenced)
                 filtersList.push('georeferenced');
                 showGeoref = true;

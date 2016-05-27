@@ -7,7 +7,7 @@
     <span id="btn-filter-options" class="contracted">Filter Options:</span>
     <div id="filter-options" hidden>
         <label for="slct-types">Show types:</label>
-        <select multiple id="slct-types" class="filter-slct">
+        <select multiple id="slct-types" class="slct-filter">
             <option value="all" selected>All</option>
             <option value="channel_rt">channel_rt</option>
             <option value="land">land</option>
@@ -15,16 +15,16 @@
             <option value="terrain_rt">terrain_rt</option>
         </select>
         <br><br>
-        <label for="slct-hours">Show hour of forecast initialization:</label>
-        <select multiple id="slct-hours" class="filter-slct">
+        <label for="slct-hours-init">Show hours of forecast initialization:</label>
+        <select multiple id="slct-hours-init" class="slct-filter">
             <option value="all" selected>All</option>
-            {% for key, value in hours.items %}
+            {% for key, value in hours_init.items %}
                 <option value="{{ value }}">{{ key }}</option>
             {% endfor %}
         </select>
         <br><br>
         <label for="slct-longrange-member">Show long range members:</label>
-        <select multiple id="slct-longrange-member" class="filter-slct">
+        <select multiple id="slct-longrange-member" class="slct-filter">
             <option value="all" selected>All</option>
             <option value="_1.f">1</option>
             <option value="_2.f">2</option>

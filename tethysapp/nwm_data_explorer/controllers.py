@@ -18,17 +18,17 @@ def data_explorer(request):
     Controller for the app home page.
     """
 
-    hours = {}
-    vals = range(0, 24)
+    hours_init = {}
+    vals_init = range(0, 24)
 
-    for val in vals:
+    for val in vals_init:
         if val < 10:
-            hours[val] = 't0' + str(val) + 'z'
+            hours_init[val] = 't0' + str(val) + 'z'
         else:
-            hours[val] = 't' + str(val) + 'z'
+            hours_init[val] = 't' + str(val) + 'z'
 
     context = {
-        'hours': hours
+        'hours_init': hours_init
     }
 
     return render(request, 'nwm_data_explorer/data_explorer.html', context)

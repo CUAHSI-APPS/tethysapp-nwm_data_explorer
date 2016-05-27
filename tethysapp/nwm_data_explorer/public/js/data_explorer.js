@@ -6,7 +6,6 @@
 var $,
     formatDropDown,
     filtersList,
-    showGeoref,
     lastQuerySelectionPath,
     currentDirPath,
     // fsPath = '/projects/water/nwm/nwm_sample?folder',
@@ -95,8 +94,6 @@ var $,
             var selectedMembers = $('#slct-longrange-member').val();
             if (selectedTypes === null || selectedHours === null || selectedMembers === null) {
                 alert('A filter input field was left blank. Filters not applied');
-            } else if (!$('#toggle-georef').is(':checked') && !$('#toggle-nongeoref').is(':checked')) {
-                alert('Both georeferenced and non-georeferenced cannot be hidden');
             } else {
                 updateFiltersList();
                 $('.contents').last().nextAll().remove();
@@ -279,8 +276,7 @@ var $,
             data: {
                 'selection_path': selectionPath,
                 'query_type': queryType,
-                'filters_list': filtersList.join(','),
-                'show_georef': showGeoref
+                'filters_list': filtersList.join(',')
             },
             error: alertUserOfError,
             success: function (response) {
@@ -327,8 +323,6 @@ var $,
         var $selectHours = $('#slct-hours');
         var $selectTypes = $('#slct-types');
         var $selectMembers = $('#slct-longrange-member');
-        var $toggleGeoref = $('#toggle-georef');
-        var $toggleNongeoref = $('#toggle-nongeoref');
 
         var addValsToFilterList = function ($slct) {
             var selectedValsList = $slct.val();
@@ -351,19 +345,6 @@ var $,
             addValsToFilterList($selectTypes);
             addValsToFilterList($selectHours);
             addValsToFilterList($selectMembers);
-
-            if ($toggleGeoref.is(':checked') && $toggleNongeoref.is(':checked')) {
-                // Show both georeferenced and non-georeferenced
-                showGeoref = null;
-            } else if (!$toggleGeoref.is(':checked')) {
-                // Hide georeferenced (only show non-georeferenced)
-                filtersList.push('georeferenced');
-                showGeoref = false;
-            } else if (!$toggleNongeoref.is(':checked')) {
-                // Hide non-georeferenced files (Only show georeferenced)
-                filtersList.push('georeferenced');
-                showGeoref = true;
-            }
         }
     };
 

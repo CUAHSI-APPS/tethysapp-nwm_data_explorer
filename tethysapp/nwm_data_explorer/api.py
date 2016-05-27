@@ -1,12 +1,41 @@
 from django.http import JsonResponse
 
-from utilities import get_file_list, get_file_metadata, get_file_response_object
+from utilities import get_files_list, get_file_metadata, get_file_response_object
+
+import os
+
+root_path = '/projects/water/nwm/'
 
 
 def api_get_file_list(request):
+    global root_path
     json_data = {}
     if request.method == 'GET':
-        json_data = get_file_list('/projects/water/nwm/nwm_sample')
+        config = None
+        date = None
+        time = None
+        date_type = None
+        filters_list = []
+
+        if request.GET.get('config'):
+            config = request.GET['config']
+        if request.GET.get('startDate'):
+            date = request.GET['startDate']
+        if request.GET.get('time'):
+            time = 't' + request.GET['time'] + 'z'
+        if request.GET.get('type'):
+            date_type = request.GET['type']
+
+        if config is None or date is None:
+            json_data['status_code'] = 400
+            json_data['reason_phrase'] = 'The \'config\' and \'startDate\' parameters must be included in the request'
+
+        path = os.path.join(root_path, config, date)
+
+        filters_list.append(time)
+        filters_list.append(date_type)
+
+        json_data = get_files_list(path, filters_list=filters_list)
     else:
         json_data['status_code'] = 405
         json_data['reason_phrase'] = 'Request must be of type "GET"'
@@ -15,6 +44,7 @@ def api_get_file_list(request):
 
 
 def api_get_file(request):
+    global root_path
     json_data = {}
 
     if request.method == 'GET':
@@ -32,6 +62,7 @@ def api_get_file(request):
 
 
 def api_get_file_metadata(request):
+    global root_path
     json_data = {}
 
     if request.method == 'GET':

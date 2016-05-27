@@ -24,24 +24,18 @@ def data_query(query_type, selection_path, filters_list):
     if query_type == 'filesystem':
         if os.path.exists(selection_path):
             if os.path.isdir(selection_path):
-                files_list = get_file_list(selection_path)
+                files_list = get_files_list(selection_path, filters_list)
                 for f in files_list:
-                    filter_out = False
-                    if os.path.isdir(os.path.join(selection_path, f)):
-                        data_type = 'folder'
+                    f_type = 'folder' if os.path.isdir(f) else 'file'
+                    f_name = os.path.basename(f)
+
+                    if not contains_folder and f_type == 'folder':
                         contains_folder = True
-                    else:
-                        data_type = "file"
-                    if data_type == 'file':
-                        for filter_val in filters_list:
-                            if filter_val != '':
-                                if str(filter_val) in str(f):
-                                    filter_out = True
-                                    break
-                    if not filter_out:
-                        select_option = '<option data-filename="%s" class="%s" data-path="%s">%s</option>' % \
-                                        (f, data_type, os.path.join(selection_path, f) + '?' + data_type, f)
-                        contents.append(select_option)
+
+                    select_option = '<option data-filename="%s" class="%s" data-path="%s">%s</option>' % \
+                                    (f_name, f_type, f + '?' + f_type, f_name)
+                    contents.append(select_option)
+
             else:
                 query_data = get_file_metadata(selection_path)
                 return query_data
@@ -116,9 +110,23 @@ def data_query(query_type, selection_path, filters_list):
     return query_data
 
 
-def get_file_list(selection_path):
-    files_list = os.listdir(selection_path)
-    files_list.sort()
+def get_files_list(selection_path, filters_list=None):
+    files_list = []
+    raw_files_list = os.listdir(selection_path)
+    raw_files_list.sort()
+    for f in raw_files_list:
+        full_path = os.path.join(selection_path, f)
+        filter_out = False
+        if filters_list is not None or (filters_list and len(filters_list) > 0):
+            if not os.path.isdir(os.path.join(selection_path, f)):
+                for filter_val in filters_list:
+                    if filter_val != '':
+                        if str(filter_val) not in str(f):
+                            filter_out = True
+                            break
+        if not filter_out:
+            files_list.append(full_path)
+
     return files_list
 
 

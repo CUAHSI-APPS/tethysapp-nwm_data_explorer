@@ -8,8 +8,8 @@ var $,
     filtersList,
     lastQuerySelectionPath,
     currentDirPath,
-    // fsPath = '/projects/water/nwm/nwm_sample?folder',
-    fsPath = '/projects/water/nwm/data?folder',
+    fsPath = '/projects/water/nwm/nwm_sample?folder',
+    // fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
 (function () {
@@ -276,7 +276,7 @@ var $,
             data: {
                 'selection_path': selectionPath,
                 'query_type': queryType,
-                'filters_list': filtersList.join(',')
+                'filters_list': filtersList.length === 0 ? undefined : filtersList.join(',')
             },
             error: alertUserOfError,
             success: function (response) {
@@ -327,14 +327,8 @@ var $,
         var addValsToFilterList = function ($slct) {
             var selectedValsList = $slct.val();
             if (selectedValsList.indexOf('all') === -1) {
-                $slct.find('option').each(function (i, opt) {
-                    if (i > 0) {  // Ignore 'All' option
-                        var val = $(opt).attr('value');
-                        if (selectedValsList.indexOf(val.toLowerCase()) === -1) {
-                            // If the current type isn't selected, add it to filtersList array
-                            filtersList.push(val);
-                        }
-                    }
+                selectedValsList.forEach(function (val) {
+                    filtersList.push(val);
                 });
             }
         };

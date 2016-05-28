@@ -26,7 +26,7 @@ def api_get_file_list(request):
         if request.GET.get('type'):
             data_type = request.GET['type']
 
-        data_is_valid, message = validate_data(config, date_string, time, data_type)
+        data_is_valid, message = validate_data(config, date_string, root_path, time, data_type)
 
         if not data_is_valid:
             json_data['status_code'] = 400
@@ -35,9 +35,10 @@ def api_get_file_list(request):
             date = ''.join(request.GET['startDate'].split('-'))
 
             path = os.path.join(root_path, config, date)
-
-            filters_list.append(time)
-            filters_list.append(data_type)
+            if time:
+                filters_list.append(time)
+            if data_type:
+                filters_list.append(data_type)
 
             files_list = get_files_list(path, filters_list=filters_list)
 

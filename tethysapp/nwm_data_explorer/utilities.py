@@ -198,7 +198,7 @@ def get_file_response_object(file_path, content_type):
     return response
 
 
-def validate_data(config, date_string, time, data_type):
+def validate_data(config, date_string, root_path, time=None, data_type=None):
     is_valid = True
     message = 'Data is valid.'
 
@@ -227,5 +227,10 @@ def validate_data(config, date_string, time, data_type):
             is_valid = False
             message = 'Invalid data_type. ' \
                       'Choose one of the following: channel, land, reservoir, or terrain'
+
+    path = os.path.join(root_path, config, ''.join(date_string.split('-')))
+    if not os.path.exists(path):
+        is_valid = False
+        message = 'There is no data stored for the startDate specified.'
 
     return is_valid, message

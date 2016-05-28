@@ -201,6 +201,8 @@ def get_file_response_object(file_path, content_type):
 def validate_data(config, date_string, root_path, time=None, data_type=None):
     is_valid = True
     message = 'Data is valid.'
+    configs = ['short_range', 'medium_range', 'long_range']
+    data_types = ['channel', 'land', 'reservoir', 'terrain']
 
     if config is None:
         is_valid = False
@@ -208,12 +210,15 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
     if date_string is None:
         is_valid = False
         message = 'The "config" parameter must be included in the request'
-    if date_string:
-        try:
-            datetime.datetime.strptime(date_string, '%Y-%m-%d')
-        except ValueError:
-            is_valid = False
-            message = 'Incorrect date format. Should be YYYY-MM-DD'
+    if config not in configs:
+        is_valid = False
+        message = 'Invalid config. ' \
+                  'Choose one of the following: short_range, medium_range, long_range'
+    try:
+        datetime.datetime.strptime(date_string, '%Y-%m-%d')
+    except ValueError:
+        is_valid = False
+        message = 'Incorrect date format. Should be YYYY-MM-DD'
     if time:
         try:
             int(time)
@@ -222,7 +227,6 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
             message = 'Incorrect time format. Should be hh. ' \
                       'For example, "00" for 12:00AM, "01" for 1:00AM, up to "23" for 11:00PM'
     if data_type:
-        data_types = ['channel', 'land', 'reservoir', 'terrain']
         if data_type not in data_types:
             is_valid = False
             message = 'Invalid data_type. ' \

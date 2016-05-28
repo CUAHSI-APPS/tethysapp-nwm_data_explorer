@@ -22,7 +22,7 @@ def api_get_file_list(request):
         if request.GET.get('startDate'):
             date_string = request.GET['startDate']
         if request.GET.get('time'):
-            time = 't' + request.GET['time'] + 'z'
+            time = request.GET['time']
         if request.GET.get('type'):
             data_type = request.GET['type']
 
@@ -36,7 +36,7 @@ def api_get_file_list(request):
 
             path = os.path.join(root_path, config, date)
             if time:
-                filters_list.append(time)
+                filters_list.append('t' + time + 'z')
             if data_type:
                 filters_list.append(data_type)
 

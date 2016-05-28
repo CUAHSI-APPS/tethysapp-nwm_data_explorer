@@ -207,33 +207,32 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
     if config is None:
         is_valid = False
         message = 'The "config" parameter must be included in the request'
-    if date_string is None:
+    elif date_string is None:
         is_valid = False
         message = 'The "config" parameter must be included in the request'
-    if config not in configs:
+    elif config not in configs:
         is_valid = False
         message = 'Invalid config. ' \
                   'Choose one of the following: short_range, medium_range, long_range'
-    try:
-        datetime.datetime.strptime(date_string, '%Y-%m-%d')
-    except ValueError:
-        is_valid = False
-        message = 'Incorrect date format. Should be YYYY-MM-DD'
-    if time:
+    elif date_string:
+        try:
+            datetime.datetime.strptime(date_string, '%Y-%m-%d')
+        except ValueError:
+            is_valid = False
+            message = 'Incorrect date format. Should be YYYY-MM-DD'
+    elif time:
         try:
             int(time)
         except ValueError:
             is_valid = False
             message = 'Incorrect time format. Should be hh. ' \
                       'For example, "00" for 12:00AM, "01" for 1:00AM, up to "23" for 11:00PM'
-    if data_type:
+    elif data_type:
         if data_type not in data_types:
             is_valid = False
             message = 'Invalid data_type. ' \
                       'Choose one of the following: channel, land, reservoir, or terrain'
-
-    path = os.path.join(root_path, config, ''.join(date_string.split('-')))
-    if not os.path.exists(path):
+    elif not os.path.exists(os.path.join(root_path, config, ''.join(date_string.split('-')))):
         is_valid = False
         message = 'There is no data stored for the startDate specified.'
 

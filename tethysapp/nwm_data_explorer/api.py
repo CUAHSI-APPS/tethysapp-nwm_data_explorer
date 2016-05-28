@@ -40,6 +40,10 @@ def api_get_file_list(request):
             filters_list.append(data_type)
 
             json_data = get_files_list(path, filters_list=filters_list)
+
+            if len(json_data) == 0:
+                json_data['status_code'] = 200
+                json_data['reason_phrase'] = 'No files matched your query.'
     else:
         json_data['status_code'] = 405
         json_data['reason_phrase'] = 'Request must be of type "GET"'

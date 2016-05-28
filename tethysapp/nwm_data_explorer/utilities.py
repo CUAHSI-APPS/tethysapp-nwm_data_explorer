@@ -244,5 +244,6 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
             is_valid = False
             message = 'There is no data stored for the startDate specified.'
             break
+        break
 
     return is_valid, message

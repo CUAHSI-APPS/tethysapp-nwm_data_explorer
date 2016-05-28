@@ -1,10 +1,10 @@
 from django.http import JsonResponse
 
-from utilities import get_files_list, get_file_metadata, get_file_response_object
+from utilities import get_files_list, get_file_metadata, get_file_response_object, validate_data
 
 import os
 
-root_path = '/projects/water/nwm/'
+root_path = '/projects/water/nwm/data'
 
 
 def api_get_file_list(request):
@@ -12,30 +12,34 @@ def api_get_file_list(request):
     json_data = {}
     if request.method == 'GET':
         config = None
-        date = None
+        date_string = None
         time = None
-        date_type = None
+        data_type = None
         filters_list = []
 
         if request.GET.get('config'):
             config = request.GET['config']
         if request.GET.get('startDate'):
-            date = request.GET['startDate']
+            date_string = request.GET['startDate']
         if request.GET.get('time'):
             time = 't' + request.GET['time'] + 'z'
         if request.GET.get('type'):
-            date_type = request.GET['type']
+            data_type = request.GET['type']
 
-        if config is None or date is None:
+        data_is_valid, message = validate_data(config, date_string, time, data_type)
+
+        if not data_is_valid:
             json_data['status_code'] = 400
-            json_data['reason_phrase'] = 'The \'config\' and \'startDate\' parameters must be included in the request'
+            json_data['reason_phrase'] = message
+        else:
+            date = ''.join(request.GET['startDate'].split('-'))
 
-        path = os.path.join(root_path, config, date)
+            path = os.path.join(root_path, config, date)
 
-        filters_list.append(time)
-        filters_list.append(date_type)
+            filters_list.append(time)
+            filters_list.append(data_type)
 
-        json_data = get_files_list(path, filters_list=filters_list)
+            json_data = get_files_list(path, filters_list=filters_list)
     else:
         json_data['status_code'] = 405
         json_data['reason_phrase'] = 'Request must be of type "GET"'
@@ -49,7 +53,7 @@ def api_get_file(request):
 
     if request.method == 'GET':
         if request.GET.get('filename'):
-            file_path = '/projects/water/nwm/nwm_sample/' + request.GET['filename']
+            file_path = os.path.join(root_path, request.GET['filename'])
             return get_file_response_object(file_path, None)
         else:
             json_data['status_code'] = 400
@@ -67,7 +71,7 @@ def api_get_file_metadata(request):
 
     if request.method == 'GET':
         if request.GET.get('filename'):
-            json_data = get_file_metadata('/projects/water/nwm/nwm_sample/' + request.GET['filename'])
+            json_data = get_file_metadata(os.path.join(root_path, request.GET['filename']))
         else:
             json_data['status_code'] = 400
             json_data['reason_phrase'] = 'The \'filename\' parameter must be included in the request'

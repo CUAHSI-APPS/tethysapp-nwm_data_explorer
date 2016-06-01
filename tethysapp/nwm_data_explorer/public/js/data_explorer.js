@@ -313,7 +313,7 @@ var $,
                 }
             } else {
                 // The selection was a file
-                addFileMetadataToUI(response.query_data);
+                addFileMetadataToUI(response.query_data, queryType);
                 modifyDownloadBtn(selectionPath, queryType);
             }
         }
@@ -342,9 +342,13 @@ var $,
         }
     };
 
-    addFileMetadataToUI = function (data) {
+    addFileMetadataToUI = function (data, queryType) {
+        if (queryType === 'irods'){
+            data = formatFileMetadata(data);
+        }
+
         $fileInfoDiv
-            .html(buildTable(formatFileMetadata(data)))
+            .html(buildTable(data))
             .prepend('<h3>File metadata:</h3>')
             .resize();
 

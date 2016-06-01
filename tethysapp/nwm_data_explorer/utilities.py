@@ -10,6 +10,7 @@ from json import loads
 import zipfile
 import random
 import datetime
+from hurry.filesize import size
 
 temp_dir = '/tmp/nwm_data'
 
@@ -136,10 +137,10 @@ def get_file_metadata(selection_path):
     file_name = os.path.basename(selection_path)
     return {
         'dataName': file_name,
-        'dataSize': file_stats.st_size,
+        'dataSize': size(file_stats.st_size),
         'dataOwnerName': getpwuid(file_stats.st_uid).pw_name,
-        'accessedAt': file_stats.st_atime * 1000,
-        'updatedAt': file_stats.st_mtime * 1000
+        'accessedAt': datetime.datetime.fromtimestamp(file_stats.st_atime).strftime('%Y-%m-%d %H:%M:%S'),
+        'updatedAt': datetime.datetime.fromtimestamp(file_stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
     }
 
 

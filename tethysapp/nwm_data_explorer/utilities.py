@@ -184,9 +184,9 @@ def zip_files(directory, files):
     zip_path = os.path.join(temp_dir, temp_file)
 
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED, False) as zip_object:
-            for each_file in files:
-                zip_object.write(os.path.join(directory, each_file), each_file)
-            zip_object.close()
+        for each_file in files:
+            zip_object.write(os.path.join(directory, each_file), each_file)
+        zip_object.close()
 
     return zip_path
 
@@ -232,11 +232,19 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
 
         if time:
             try:
-                int(time)
+                times = time.split(',')
+                if len(times) == 1:
+                    times = time[0].split('-')
+                    if len(times) != 2:
+                        raise ValueError
+                for t in times:
+                    int(t)
             except ValueError:
                 is_valid = False
-                message = 'Incorrect time format. Should be hh. ' \
-                          'For example, "00" for 12:00AM, "01" for 1:00AM, and so on up to "23" for 11:00PM'
+                message = 'Incorrect time format. Each individual time must be formatted as an integer from 0 to 23. ' \
+                          'For example, "time=0" for 12AM, "time=01" for 1AM, and so on up to "time=23" for 11PM. ' \
+                          'If multiple times are desired, either separate each time by a comma, ' \
+                          'or separate a range of times with a dash. For example, "time=1,3,5" or "time=0-10".'
                 break
         if data_type:
             if data_type not in data_types:

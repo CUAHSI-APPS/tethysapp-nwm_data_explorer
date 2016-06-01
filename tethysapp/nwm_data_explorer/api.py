@@ -41,7 +41,16 @@ def api_get_file_list(request):
                 path = os.path.join(root_path, config, date)
 
             if time:
-                filters_dict['hours'] = ['t' + time + 'z']
+                times = time.split(',')
+                if len(times) == 1:
+                    times = time[0].split('-')
+                    if len(times) > 1:
+                        times = range(int(times[0]), int(times[1]))
+                for t in times:
+                    if 'hours' in filters_dict:
+                        filters_dict['hours'].append('t%sz' % t)
+                    else:
+                        filters_dict['hours'] = [t]
 
             if data_type:
                 filters_dict['types'] = [data_type]

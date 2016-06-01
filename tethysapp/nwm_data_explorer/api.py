@@ -45,7 +45,7 @@ def api_get_file_list(request):
                 if len(times) == 1:
                     times = times[0].split('-')
                     if len(times) > 1:
-                        times = range(int(times[0]), int(times[1]))
+                        times = range(int(times[0]), int(times[1]) + 1)
                 for t in times:
                     t_mod = '0%s' % t if int(t) < 10 else t
                     if 'hours' in filters_dict:

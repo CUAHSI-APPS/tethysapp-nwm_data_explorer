@@ -118,10 +118,11 @@ def get_files_list(selection_path, filters_dict=None):
     raw_files_list.sort()
     for f in raw_files_list:
         full_path = os.path.join(selection_path, f)
-        filter_out = True
+        filter_out = False
         if filters_dict is not None or (filters_dict and len(filters_dict) > 0):
             if not os.path.isdir(os.path.join(selection_path, f)):
                 for key in filters_dict:
+                    filter_out = True
                     for filter_val in filters_dict[key]:
                         if str(filter_val) in str(f):
                             filter_out = False

@@ -201,7 +201,7 @@ def get_file_response_object(file_path, content_type):
 def validate_data(config, date_string, root_path, time=None, data_type=None):
     is_valid = True
     message = 'Data is valid.'
-    configs = ['short_range', 'medium_range', 'long_range']
+    configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
     data_types = ['channel', 'land', 'reservoir', 'terrain']
 
     while True:
@@ -216,7 +216,7 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
         if config not in configs:
             is_valid = False
             message = 'Invalid config. ' \
-                      'Choose one of the following: short_range, medium_range, long_range'
+                      'Choose one of the following: short_range, medium_range, long_range, analysis_assim.'
             break
 
         try:
@@ -232,7 +232,7 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
             except ValueError:
                 is_valid = False
                 message = 'Incorrect time format. Should be hh. ' \
-                          'For example, "00" for 12:00AM, "01" for 1:00AM, up to "23" for 11:00PM'
+                          'For example, "00" for 12:00AM, "01" for 1:00AM, and so on up to "23" for 11:00PM'
                 break
         if data_type:
             if data_type not in data_types:

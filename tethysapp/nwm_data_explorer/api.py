@@ -32,11 +32,17 @@ def api_get_file_list(request):
             json_data['status_code'] = 400
             json_data['reason_phrase'] = message
         else:
-            date = ''.join(request.GET['startDate'].split('-'))
+            date = ''.join(date_string.split('-'))
 
-            path = os.path.join(root_path, config, date)
+            if config == 'analysis_assim':
+                filters_list.append(date)
+                path = os.path.join(root_path, config)
+            else:
+                path = os.path.join(root_path, config, date)
+
             if time:
                 filters_list.append('t' + time + 'z')
+
             if data_type:
                 filters_list.append(data_type)
 

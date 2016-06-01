@@ -441,9 +441,11 @@ var $,
         } else {
             $title.text('iRODS Explorer');
             $subtitle.text('Browse the National Water Model data stored in iRODS');
-            queryData('irods', irodsPath);
-            lastQuerySelectionPath = irodsPath;
+            // queryData('irods', irodsPath);
+            // lastQuerySelectionPath = irodsPath;
             $link = $('#link-irods');
+            $subtitle.after('<p>This feature is still in development.</p>')
+            $('#btn-filter-options').addClass('hidden');
         }
         $link.addClass('active');
         createSelect2Objects();

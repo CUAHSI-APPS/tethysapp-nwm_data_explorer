@@ -8,7 +8,7 @@ class NationalWaterModelDataExplorer(TethysAppBase):
 
     name = 'National Water Model Data Explorer'
     index = 'nwm_data_explorer:home'
-    icon = 'nwm_data_explorer/images/icon.gif'
+    icon = 'nwm_data_explorer/images/icon.png'
     package = 'nwm_data_explorer'
     root_url = 'nwm-data-explorer'
     color = '#e74c3c'

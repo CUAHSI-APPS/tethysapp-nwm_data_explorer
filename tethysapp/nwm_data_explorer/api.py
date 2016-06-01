@@ -51,7 +51,7 @@ def api_get_file_list(request):
                     if 'hours' in filters_dict:
                         filters_dict['hours'].append('t%sz' % t_mod)
                     else:
-                        filters_dict['hours'] = [t_mod]
+                        filters_dict['hours'] = ['t%sz' % t_mod]
 
             if data_type:
                 filters_dict['types'] = [data_type]

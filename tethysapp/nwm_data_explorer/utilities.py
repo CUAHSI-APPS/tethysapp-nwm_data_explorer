@@ -121,22 +121,27 @@ def get_files_list(selection_path, filters_dict=None):
         filter_out = False
         if filters_dict is not None or (filters_dict and len(filters_dict) > 0):
             if not os.path.isdir(os.path.join(selection_path, f)):
-                filter_out = True
                 if 'types' in filters_dict:
                     for filter_val in filters_dict['types']:
                         if str(filter_val) in str(f):
                             filter_out = False
                             break
+                        else:
+                            filter_out = True
                 if 'members' in filters_dict:
                     for filter_val in filters_dict['members']:
                         if str(filter_val) in str(f):
                             filter_out = False
                             break
+                        else:
+                            filter_out = True
                 if 'hours' in filters_dict:
                     for filter_val in filters_dict['hours']:
                         if str(filter_val) in str(f):
                             filter_out = False
                             break
+                        else:
+                            filter_out = True
         if not filter_out:
             files_list.append(full_path)
 

@@ -15,7 +15,7 @@ def api_get_file_list(request):
         date_string = None
         time = None
         data_type = None
-        filters_list = []
+        filters_dict = {}
 
         if request.GET.get('config'):
             config = request.GET['config']
@@ -35,18 +35,18 @@ def api_get_file_list(request):
             date = ''.join(date_string.split('-'))
 
             if config == 'analysis_assim':
-                filters_list.append(date)
+                filters_dict['dates'] = [date]
                 path = os.path.join(root_path, config)
             else:
                 path = os.path.join(root_path, config, date)
 
             if time:
-                filters_list.append('t' + time + 'z')
+                filters_dict['hours'] = ['t' + time + 'z']
 
             if data_type:
-                filters_list.append(data_type)
+                filters_dict['types'] = [data_type]
 
-            files_list = get_files_list(path, filters_dict=filters_list)
+            files_list = get_files_list(path, filters_dict=filters_dict)
 
             if len(files_list) == 0:
                 json_data['status_code'] = 200

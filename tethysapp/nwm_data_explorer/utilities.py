@@ -129,31 +129,6 @@ def get_files_list(selection_path, filters_dict=None):
                                 break
                             else:
                                 filter_out = True
-                #
-                # if not filter_out:
-                #     if 'types' in filters_dict:
-                #         for filter_val in filters_dict['types']:
-                #             if str(filter_val) in str(f):
-                #                 filter_out = False
-                #                 break
-                #             else:
-                #                 filter_out = True
-                # if not filter_out:
-                #     if 'members' in filters_dict:
-                #         for filter_val in filters_dict['members']:
-                #             if str(filter_val) in str(f):
-                #                 filter_out = False
-                #                 break
-                #             else:
-                #                 filter_out = True
-                # if not filter_out:
-                #     if 'hours' in filters_dict:
-                #         for filter_val in filters_dict['hours']:
-                #             if str(filter_val) in str(f):
-                #                 filter_out = False
-                #                 break
-                #             else:
-                #                 filter_out = True
         if not filter_out:
             files_list.append(full_path)
 

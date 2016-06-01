@@ -240,7 +240,8 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
                 message = 'Invalid data_type. ' \
                           'Choose one of the following: channel, land, reservoir, or terrain'
                 break
-        if not os.path.exists(os.path.join(root_path, config, ''.join(date_string.split('-')))):
+        if config != 'analysis_assim' \
+                and not os.path.exists(os.path.join(root_path, config, ''.join(date_string.split('-')))):
             is_valid = False
             message = 'There is no data stored for the startDate specified.'
             break

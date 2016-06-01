@@ -235,7 +235,7 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
                 times = time.split(',')
                 if len(times) == 1:
                     times = time[0].split('-')
-                    if len(times) != 2:
+                    if len(times) > 2:
                         raise ValueError
                 for t in times:
                     int(t)

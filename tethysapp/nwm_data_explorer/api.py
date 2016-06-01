@@ -52,7 +52,10 @@ def api_get_file_list(request):
                 json_data['status_code'] = 200
                 json_data['reason_phrase'] = 'No files matched your query.'
             else:
-                json_data = files_list
+                modified_files_list = []
+                for f in files_list:
+                    modified_files_list.append(f.split(root_path)[1][1:])
+                json_data = modified_files_list
     else:
         json_data['status_code'] = 405
         json_data['reason_phrase'] = 'Request must be of type "GET"'

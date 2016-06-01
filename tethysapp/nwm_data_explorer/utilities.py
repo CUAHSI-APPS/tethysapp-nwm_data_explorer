@@ -15,7 +15,7 @@ from hurry.filesize import size
 temp_dir = '/tmp/nwm_data'
 
 
-def data_query(query_type, selection_path, filters_list):
+def data_query(query_type, selection_path, filters_dict):
     response = None
     contents = []
     contains_folder = False
@@ -26,7 +26,7 @@ def data_query(query_type, selection_path, filters_list):
     if query_type == 'filesystem':
         if os.path.exists(selection_path):
             if os.path.isdir(selection_path):
-                files_list = get_files_list(selection_path, filters_list)
+                files_list = get_files_list(selection_path, filters_dict)
                 for f in files_list:
                     f_type = 'folder' if os.path.isdir(f) else 'file'
                     f_name = os.path.basename(f)
@@ -112,19 +112,19 @@ def data_query(query_type, selection_path, filters_list):
     return query_data
 
 
-def get_files_list(selection_path, filters_list=None):
+def get_files_list(selection_path, filters_dict=None):
     files_list = []
     raw_files_list = os.listdir(selection_path)
     raw_files_list.sort()
     for f in raw_files_list:
         full_path = os.path.join(selection_path, f)
-        filter_out = False
-        if filters_list is not None or (filters_list and len(filters_list) > 0):
+        filter_out = True
+        if filters_dict is not None or (filters_dict and len(filters_dict) > 0):
             if not os.path.isdir(os.path.join(selection_path, f)):
-                for filter_val in filters_list:
-                    if filter_val != '':
-                        if str(filter_val) not in str(f):
-                            filter_out = True
+                for key in filters_dict:
+                    for filter_val in filters_dict[key]:
+                        if str(filter_val) in str(f):
+                            filter_out = False
                             break
         if not filter_out:
             files_list.append(full_path)

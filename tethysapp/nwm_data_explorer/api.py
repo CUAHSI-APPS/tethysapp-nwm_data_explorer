@@ -46,7 +46,7 @@ def api_get_file_list(request):
             if data_type:
                 filters_list.append(data_type)
 
-            files_list = get_files_list(path, filters_list=filters_list)
+            files_list = get_files_list(path, filters_dict=filters_list)
 
             if len(files_list) == 0:
                 json_data['status_code'] = 200

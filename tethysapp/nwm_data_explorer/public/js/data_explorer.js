@@ -5,7 +5,7 @@
 /**GLOBAL VARIABLE IMPORTS**/
 var $,
     formatDropDown,
-    filtersList,
+    filtersDict,
     lastQuerySelectionPath,
     currentDirPath,
     // fsPath = '/projects/water/nwm/nwm_sample?folder',
@@ -276,7 +276,7 @@ var $,
             data: {
                 'selection_path': selectionPath,
                 'query_type': queryType,
-                'filters_list': filtersList.length === 0 ? undefined : filtersList.join(',')
+                'filters_dict': Object.keys(filtersDict).length === 0 ? undefined : JSON.stringify(filtersDict)
             },
             error: alertUserOfError,
             success: function (response) {
@@ -307,7 +307,7 @@ var $,
                 // The selection was a folder/directory
                 $dropDowns.append(contents);
                 formatDropDown();
-                if (!response.query_data.contains_folder && filtersList.length > 0 && $('.contents').last().find('option').length > 1) {
+                if (!response.query_data.contains_folder && Object.keys(filtersDict).length > 0 && $('.contents').last().find('option').length > 1) {
                     $downloadAll.removeClass('hidden');
                     // prepareDownloadAllButton();
                 }
@@ -324,21 +324,26 @@ var $,
         var $selectTypes = $('#slct-types');
         var $selectMembers = $('#slct-longrange-member');
 
-        var addValsToFilterList = function ($slct) {
+        var addValsToFilterList = function ($slct, type) {
             var selectedValsList = $slct.val();
             if (selectedValsList.indexOf('all') === -1) {
                 selectedValsList.forEach(function (val) {
-                    filtersList.push(val);
+                    if (filtersDict[type] === undefined) {
+                        filtersDict[type] = [];
+                        filtersDict[type].push(val);
+                    } else {
+                        filtersDict[type].push(val);
+                    }
                 });
             }
         };
 
-        filtersList = [];
+        filtersDict = {};
 
         if (!initial) {
-            addValsToFilterList($selectTypes);
-            addValsToFilterList($selectHours);
-            addValsToFilterList($selectMembers);
+            addValsToFilterList($selectTypes, 'types');
+            addValsToFilterList($selectHours, 'hours');
+            addValsToFilterList($selectMembers, 'members');
         }
     };
 

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 
 import os
+from json import loads
 from shutil import rmtree
 from utilities import data_query, get_temp_folder_path, format_selection_path, zip_files, temp_dir, \
     get_file_response_object
@@ -10,12 +11,12 @@ def get_folder_contents(request):
     if request.method == 'GET':
         selection_path = request.GET['selection_path']
         query_type = request.GET['query_type']
-        filters_list = None
+        filters_dict = None
 
-        if request.GET.get('filters_list'):
-            filters_list = request.GET['filters_list'].split(',')
+        if request.GET.get('filters_dict'):
+            filters_dict = loads(request.GET['filters_dict'])
 
-        query_data = data_query(query_type, selection_path, filters_list)
+        query_data = data_query(query_type, selection_path, filters_dict)
 
         if query_data == 'An error occured':
             return JsonResponse({

@@ -43,7 +43,7 @@ def api_get_file_list(request):
             if time:
                 times = time.split(',')
                 if len(times) == 1:
-                    times = time[0].split('-')
+                    times = times[0].split('-')
                     if len(times) > 1:
                         times = range(int(times[0]), int(times[1]))
                 for t in times:

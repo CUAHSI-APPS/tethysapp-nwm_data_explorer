@@ -211,11 +211,11 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
     while True:
         if config is None:
             is_valid = False
-            message = 'The "config" parameter must be included in the request'
+            message = 'The \"config\" parameter must be included in the request'
             break
         if date_string is None:
             is_valid = False
-            message = 'The "config" parameter must be included in the request'
+            message = 'The \"startDate\" parameter must be included in the request'
             break
         if config not in configs:
             is_valid = False

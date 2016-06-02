@@ -15,22 +15,54 @@
     <h3>GetFileList</h3>
     <table>
         <tr>
-            <th>Supported Methods</th>
-            <td>GET</td>
+            <td><b>Supported Methods</b></td>
+            <td colspan="5">GET</td>
         </tr>
         <tr>
-            <th>Returns</th>
-            <td>A list of all available files in the NWM dataset</td>
+            <td><b>Returns</b></td>
+            <td colspan="5">A list of all available files in the NWM subset defined by the specified parameters</td>
         </tr>
         <tr>
-            <th>Params</th>
-            <td>None</td>
+            <td rowspan="5"><b>Params</b></td>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Valid Values</b></td>
+            <td><b>Required</b></td>
+            <td><b>Default if omitted</td>
+        </tr>
+        <tr>
+            <td>config</td>
+            <td>The configuration of the files.</td>
+            <td>One of the following strings: "short_range", "long_range", "medium_range", or "analysis_assim"</td>
+            <td>Yes</td>
+            <td>Cannot be ommitted</td>
+        </tr>
+        <tr>
+            <td>startDate</td>
+            <td>The date on which the forecast was initialized</td>
+            <td>A string of the form "YYYY-MM-DD"</td>
+            <td>Yes</td>
+            <td>Cannot be omitted</td>
+        </tr>
+        <tr>
+            <td>time</td>
+            <td>The time at which the forecast is initialized at</td>
+            <td>Comma-separated integers from 0 to 23, or a dash-separated range of values from 0 to 23</td>
+            <td>No</td>
+            <td>"0-23" or all possible initialization times</td>
+        </tr>
+        <tr>
+            <td>type</td>
+            <td>The type of data the file corresponds to</td>
+            <td>One of the following strings: "land", "terrain", "channel", or "reservoir"</td>
+            <td>No</td>
+            <td>All types</td>
         </tr>
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList" target="_blank">
-        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain</code>
     </a>
     <br><br>
 
@@ -51,8 +83,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc" target="_blank">
-        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
     </a>
     <br><br>
 
@@ -73,8 +105,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc" target="_blank">
-        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=nwm.t17z.short_range.channel_rt.f002.conus.nc</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
     </a>
 {% endblock %}
 

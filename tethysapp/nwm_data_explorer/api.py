@@ -109,7 +109,7 @@ def api_get_file_metadata(request):
         if request.GET.get('file'):
             file_path = os.path.join(root_path, request.GET['file'].replace('-', '/'))
             if os.path.exists(file_path):
-                json_data = get_file_metadata(os.path.join(root_path, request.GET['file']))
+                json_data = get_file_metadata(file_path)
             else:
                 json_data['status_code'] = 400
                 json_data['reason_phrase'] = 'The file specified does not exist. ' \

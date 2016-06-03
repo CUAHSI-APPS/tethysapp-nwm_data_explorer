@@ -59,7 +59,7 @@ def api_get_file_list(request):
                     if 'types' in filters_dict:
                         filters_dict['types'].append(d_type)
                     else:
-                        filters_dict['types'] = [data_type]
+                        filters_dict['types'] = [d_type]
 
             files_list = get_files_list(path, filters_dict=filters_dict)
 

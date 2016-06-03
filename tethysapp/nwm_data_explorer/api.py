@@ -85,7 +85,12 @@ def api_get_file(request):
     if request.method == 'GET':
         if request.GET.get('file'):
             file_path = os.path.join(root_path, request.GET['file'].replace('-', '/'))
-            return get_file_response_object(file_path, None)
+            if os.path.exists(file_path):
+                return get_file_response_object(file_path, None)
+            else:
+                json_data['status_code'] = 400
+                json_data['reason_phrase'] = 'The file specified does not exist. ' \
+                                             'Make sure it exactly matches the string returned in the GetFileList list.'
         else:
             json_data['status_code'] = 400
             json_data['reason_phrase'] = 'The \"file\" parameter must be included in the request'
@@ -102,7 +107,13 @@ def api_get_file_metadata(request):
 
     if request.method == 'GET':
         if request.GET.get('file'):
-            json_data = get_file_metadata(os.path.join(root_path, request.GET['file']))
+            file_path = os.path.join(root_path, request.GET['file'].replace('-', '/'))
+            if os.path.exists(file_path):
+                json_data = get_file_metadata(os.path.join(root_path, request.GET['file']))
+            else:
+                json_data['status_code'] = 400
+                json_data['reason_phrase'] = 'The file specified does not exist. ' \
+                                             'Make sure it exactly matches the string returned in the GetFileList list.'
         else:
             json_data['status_code'] = 400
             json_data['reason_phrase'] = 'The \"file\" parameter must be included in the request'

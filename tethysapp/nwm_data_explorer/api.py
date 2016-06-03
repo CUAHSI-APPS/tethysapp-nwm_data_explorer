@@ -54,7 +54,12 @@ def api_get_file_list(request):
                         filters_dict['hours'] = ['t%sz' % t_mod]
 
             if data_type:
-                filters_dict['types'] = [data_type]
+                data_types = data_type.split(',')
+                for d_type in data_types:
+                    if 'types' in filters_dict:
+                        filters_dict['types'].append(d_type)
+                    else:
+                        filters_dict['types'] = [data_type]
 
             files_list = get_files_list(path, filters_dict=filters_dict)
 

@@ -205,8 +205,8 @@ def get_file_response_object(file_path, content_type):
 def validate_data(config, date_string, root_path, time=None, data_type=None):
     is_valid = True
     message = 'Data is valid.'
-    configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
-    data_types = ['channel', 'land', 'reservoir', 'terrain']
+    valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
+    valid_data_types = ['channel', 'land', 'reservoir', 'terrain']
 
     while True:
         if config is None:
@@ -217,7 +217,7 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
             is_valid = False
             message = 'The \"startDate\" parameter must be included in the request'
             break
-        if config not in configs:
+        if config not in valid_configs:
             is_valid = False
             message = 'Invalid config. ' \
                       'Choose one of the following: short_range, medium_range, long_range, analysis_assim.'
@@ -247,11 +247,14 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
                           'or separate a range of times with a dash. For example, "time=1,3,5" or "time=0-10".'
                 break
         if data_type:
-            if data_type not in data_types:
-                is_valid = False
-                message = 'Invalid data_type. ' \
-                          'Choose one of the following: channel, land, reservoir, or terrain'
-                break
+            data_types = data_type.split(',')
+            for d_type in data_types:
+                if d_type not in valid_data_types:
+                    is_valid = False
+                    message = 'Invalid data_type specified. ' \
+                              'You may only choose from the following: channel, land, reservoir, or terrain. ' \
+                              'If specifying more than one, separate each with a comma.'
+                    break
         if config != 'analysis_assim' \
                 and not os.path.exists(os.path.join(root_path, config, ''.join(date_string.split('-')))):
             is_valid = False

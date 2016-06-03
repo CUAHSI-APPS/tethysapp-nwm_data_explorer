@@ -329,8 +329,7 @@ var $,
             if (selectedValsList.indexOf('all') === -1) {
                 selectedValsList.forEach(function (val) {
                     if (filtersDict[type] === undefined) {
-                        filtersDict[type] = [];
-                        filtersDict[type].push(val);
+                        filtersDict[type] = [val];
                     } else {
                         filtersDict[type].push(val);
                     }

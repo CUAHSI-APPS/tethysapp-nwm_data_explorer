@@ -10,18 +10,71 @@
         Pages section below. To learn more about the developers api, click the Developers API link in the left navigation bar.
     </p>
     <h2>Data Exploration Pages</h2>
+    <h5>iRODS Explorer</h5>
+    <p>Currently under development. Once complete, this option will allow users to browse production files stored on the nwmZone of iRODS.</p>
+    <h5>Filesystem Explorer</h5>
     <p>
-        There is a link in the left navigation bar corresponding to each of these exploration options.
-        Both exploration pages have the same simple layout. Each starts with one selectable dropdown list that can be
-        expanded to view all of the files and/or folders in the current directory. If a folder is selected from the dropdown list,
-        then an additional selectable dropdown list appears, which can be expanded to view all of the files and/or folders in that
-        directory. And so forth, until a file is selected. If a file is selected, the available metadata corresponding to that file
-        will appear in a table and a "Download" button will appear. By clicking the "Download" button, the file will be downloaded
-        to your computer.
+        The Filesystem Explorer page allows users to browse the NWM data being stored on the HydroShare server on which this app runs, making data transfer quick and reliable.
+        Refer to the annotated screenshot below as each numbered component is explained.
+    </p>
+    <img src="/static/nwm_data_explorer/images/screenshot-app-help.png" width="100%">
+    <h6>1. Filter Options</h6>
+    <p>
+        The Filter Options allow the user to gain a "filtered" view into the files available. In many cases, a folder contains hundreds of files.
+        If the user knows more specifically which files they are looking for, they can set any of the three available filters to hone in on the desired files more quickly.
+        The Filter Options can be expanded and collapsed by clicking the red Filter Options icon. The Filter Options are originally
+        collapsed when the page first loads. See below for a description of each available filter.</p>
+    <p>
+    <h6>2. Filter by Forecast File Type </h6>
+    <p>
+        Provides a filter based on the type of forecast you want to view files for. There are for forecast file options:
+        channel, terrain, reservoir, and land. The user can select one or more options to filter by. The options selected
+        are those that will be shown in the Filesystem Explorer Dropdown (see #6 below).
+        Those not selected will be hidden. The default option is "All", which will not filter out any and show them all.
     </p>
     <p>
-
+    <h6>3. Filter by Hour of Forecast Initialization</h6>
+    <p>
+        Provides a filter based on the type of the hour at which the forecast was initialized. There are 24 options, which are integers
+        ranging from 0 to 23, with 0 representing 12:00am and 23 representing 11:00pm. The user can select one or more options to filter by.
+        The options selected are those that will be shown in the Filesystem Explorer Dropdown (see #6 below).
+        Those not selected will be hidden. The default option is "All", which will not filter out any and show them all.
+    <p>
+    <h6>4. Filter by Long Range Forecast Member</h6>
+    <p>
+        This filter is only relevant to the files under the "long_range" directory. It provides a filter based on the
+        long range member. There are 4 long range members, which are represented by integers ranging from 1 to 4.
+        The user can select one or more long range members to filter by.
+        The options selected are those that will be shown in the Filesystem Explorer Dropdown (see #6 below).
+        Those not selected will be hidden. The default option is "All", which will not filter out any and show them all.
+    <p>
+    <h6>5. Apply Filters Button</h6>
+    <p>
+        This button must be pressed for any change or update to the Filter Options to be applied. Upon clicking the button,
+        the current dropdown (directory) will be reloaded to reflect the specified filter options.
+    <p>
+    <h6>6. Filesystem Explorer Dropdowns</h6>
+    <p>
+        These are the equivalent to a filesystem explorer on a computer operating system (such as Windows or Mac).
+        The 'home' directory is represented by the top dropdown that is always shown by default. By clicking the dropdown,
+        it expands to show all of the files and/or folders available in that directory. If a directory is selected (clicked)
+        then a new dropdown appears below the current, bottom-most dropdown that represents the directory that was chosen. That dropdown can then
+        be clicked, expanding it to show all of the files and/or folders available in that directory. And so forth,
+        until a file is selected. If the selection made is a file, the metadata corresponding to that file appears in table
+        format below the current, bottom-most dropdown as well as a Download button that can be clicked to download selected file.
+    <p>
+    <h6>7. Download All Button</h6>
+    <p>
+        This button will ONLY appear under two conditions: 1) The user has modified the Filter Options (they are not ALL set to their
+        defaults of "All". And 2) The user has reached a directory containing only files, no folders. By clicking this button, every
+        file that appears in the current, bottom-most dropdown will be downloaded one by one. For that reason, the user should exercise
+        CAUTION and BEWARE. It is possible that nearly hundreds of files will be downloaded, even if filters have been applied. Also, it is
+        likely that only the first file will download. If this is the case, it is because your browser is set to block multiple popups from
+        this app. You can usually change this option by clicking the "Popup blocked" icon (that often appears in the browser to
+        the right of the URL entry box, see screenshot below) and selecting something similar to "Always allows popups on this site". Then you will have to
+        re-click the Download All button for them all to download successfully.
     </p>
+    <img src="/static/nwm_data_explorer/images/screenshot-popup-blocked.png" width="100%">
 {% endblock %}
 
 {% block content_dependent_styles %}

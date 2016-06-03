@@ -90,7 +90,7 @@ def api_get_file(request):
             else:
                 json_data['status_code'] = 400
                 json_data['reason_phrase'] = 'The file specified does not exist. ' \
-                                             'Make sure it exactly matches the string returned in the GetFileList list.'
+                                             'Make sure it exactly matches a string returned by the GetFileList method.'
         else:
             json_data['status_code'] = 400
             json_data['reason_phrase'] = 'The \"file\" parameter must be included in the request'
@@ -113,7 +113,7 @@ def api_get_file_metadata(request):
             else:
                 json_data['status_code'] = 400
                 json_data['reason_phrase'] = 'The file specified does not exist. ' \
-                                             'Make sure it exactly matches the string returned in the GetFileList list.'
+                                             'Make sure it exactly matches a string returned by the GetFileList method.'
         else:
             json_data['status_code'] = 400
             json_data['reason_phrase'] = 'The \"file\" parameter must be included in the request'

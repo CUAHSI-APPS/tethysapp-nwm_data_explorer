@@ -118,7 +118,7 @@ var $,
                 $(this).next().nextAll().remove();
             }
             selectionPath = $(e.params.data.element).attr('data-path');
-            if (selectionPath.indexOf('?file') > -1) {
+            if (selectionPath.indexOf('?file') !== -1) {
                 lastQuerySelectionPath = selectionPath;
             }
             queryData(getQueryType(), selectionPath);

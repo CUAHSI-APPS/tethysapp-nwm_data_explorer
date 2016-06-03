@@ -32,8 +32,8 @@
         </tr>
         <tr>
             <td>config</td>
-            <td>The configuration of the files.</td>
-            <td>One of the following strings: "short_range", "long_range", "medium_range", or "analysis_assim"</td>
+            <td>The configuration of the files</td>
+            <td>One and only one of the following strings: "short_range", "long_range", "medium_range", or "analysis_assim"</td>
             <td>Yes</td>
             <td>Cannot be ommitted</td>
         </tr>
@@ -47,22 +47,22 @@
         <tr>
             <td>time</td>
             <td>The time at which the forecast is initialized at</td>
-            <td>Comma-separated integers from 0 to 23, or a dash-separated range of values from 0 to 23</td>
+            <td>Comma-separated integers from 0 to 23, or two dash-separated values from 0 to 23 representing a desired range of values</td>
             <td>No</td>
             <td>"0-23" or all possible initialization times</td>
         </tr>
         <tr>
             <td>type</td>
             <td>The type of data the file corresponds to</td>
-            <td>One of the following strings: "land", "terrain", "channel", or "reservoir"</td>
+            <td>One or more of the following strings, separated by commas: "land", "terrain", "channel", or "reservoir"</td>
             <td>No</td>
             <td>All types</td>
         </tr>
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain" target="_blank">
-        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel</code>
     </a>
     <br><br>
 
@@ -70,21 +70,32 @@
     <table>
         <tr>
             <th>Supported Methods</th>
-            <td>GET</td>
+            <td colspan="5">GET</td>
         </tr>
         <tr>
             <th>Returns</th>
-            <td>Key/value pairs representing all of the available metadata for the specified file</td>
+            <td colspan="5">Key/value pairs representing all of the available metadata for the specified file</td>
         </tr>
         <tr>
-            <th>Params</th>
-            <td>filename (the name of the file of interest, as it appears in the GetFileList result)</td>
+            <td rowspan="5"><b>Params</b></td>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Valid Values</b></td>
+            <td><b>Required</b></td>
+            <td><b>Default if omitted</td>
+        </tr>
+        <tr>
+            <td>file</td>
+            <td>A string representing the desired file, exactly as it appears in the GetFileList return list.</td>
+            <td>Any string that appears in the GetFileList return list.</td>
+            <td>Yes</td>
+            <td>Cannot be ommitted</td>
         </tr>
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
-        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?file=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?file=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
     </a>
     <br><br>
 
@@ -92,21 +103,32 @@
     <table>
         <tr>
             <th>Supported Methods</th>
-            <td>GET</td>
+            <td colspan="5">GET</td>
         </tr>
         <tr>
             <th>Returns</th>
-            <td>A streaming download of the specified file</td>
+            <td colspan="5">A streaming download of the specified file.</td>
         </tr>
         <tr>
-            <th>Params</th>
-            <td>filename (the name of the file of interest, as it appears in the GetFileList result)</td>
+            <td rowspan="5"><b>Params</b></td>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Valid Values</b></td>
+            <td><b>Required</b></td>
+            <td><b>Default if omitted</td>
+        </tr>
+        <tr>
+            <td>file</td>
+            <td>A string representing the desired file, exactly as it appears in the GetFileList return list.</td>
+            <td>Any string that appears in the GetFileList return list.</td>
+            <td>Yes</td>
+            <td>Cannot be ommitted</td>
         </tr>
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
-        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?filename=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
+    <a href="https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?file=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
+        <code>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/GetFile?file=short_range/20160601/nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
     </a>
 {% endblock %}
 

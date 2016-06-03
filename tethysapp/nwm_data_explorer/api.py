@@ -69,7 +69,7 @@ def api_get_file_list(request):
             else:
                 modified_files_list = []
                 for f in files_list:
-                    modified_files_list.append(f.split(root_path)[1][1:])
+                    modified_files_list.append(f.split(root_path)[1][1:].replace('/', '-'))
                 json_data = modified_files_list
     else:
         json_data['status_code'] = 405
@@ -83,12 +83,12 @@ def api_get_file(request):
     json_data = {}
 
     if request.method == 'GET':
-        if request.GET.get('filename'):
-            file_path = os.path.join(root_path, request.GET['filename'])
+        if request.GET.get('file'):
+            file_path = os.path.join(root_path, request.GET['file'].replace('-', '/'))
             return get_file_response_object(file_path, None)
         else:
             json_data['status_code'] = 400
-            json_data['reason_phrase'] = 'The \'filename\' parameter must be included in the request'
+            json_data['reason_phrase'] = 'The \"file\" parameter must be included in the request'
     else:
         json_data['status_code'] = 405
         json_data['reason_phrase'] = 'Request must be of type "GET"'
@@ -101,11 +101,11 @@ def api_get_file_metadata(request):
     json_data = {}
 
     if request.method == 'GET':
-        if request.GET.get('filename'):
-            json_data = get_file_metadata(os.path.join(root_path, request.GET['filename']))
+        if request.GET.get('file'):
+            json_data = get_file_metadata(os.path.join(root_path, request.GET['file']))
         else:
             json_data['status_code'] = 400
-            json_data['reason_phrase'] = 'The \'filename\' parameter must be included in the request'
+            json_data['reason_phrase'] = 'The \"file\" parameter must be included in the request'
     else:
         json_data['status_code'] = 405
         json_data['reason_phrase'] = 'Request must be of type "GET"'

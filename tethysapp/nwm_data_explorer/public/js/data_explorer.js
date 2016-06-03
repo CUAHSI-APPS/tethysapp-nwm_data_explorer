@@ -301,10 +301,10 @@ var $,
                 alertUserOfError(response.error);
             }
         } else {
-            currentDirPath = selectionPath.replace('?folder', '');
             contents = response.query_data.contents;
             if (contents) {
                 // The selection was a folder/directory
+                currentDirPath = selectionPath.replace('?folder', '');
                 $dropDowns.append(contents);
                 formatDropDown();
                 if (!response.query_data.contains_folder && Object.keys(filtersDict).length > 0 && $('.contents').last().find('option').length > 1) {
@@ -423,9 +423,9 @@ var $,
             return state.text;
         }
         if ($(state.element).attr('data-path').indexOf('?folder') !== -1) {
-            return $('<span><img src="/static/nfie_irods_explorer/images/dir_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
+            return $('<span><img src="/static/nwm_data_explorer/images/dir_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
         }
-        return $('<span><img src="/static/nfie_irods_explorer/images/file_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
+        return $('<span><img src="/static/nwm_data_explorer/images/file_icon.svg" class="drop-down-icon" /> ' + state.text + '</span>');
     };
 
 

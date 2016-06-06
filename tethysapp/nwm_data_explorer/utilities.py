@@ -9,7 +9,7 @@ from json import loads
 
 import zipfile
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from hurry.filesize import size
 
 temp_dir = '/tmp/nwm_data'
@@ -286,6 +286,6 @@ def generate_date_list(start_date_raw, end_date_raw):
     end_date = datetime.strptime(end_date_raw, "%Y-%m-%d").date()
     while start_date <= end_date:
         date_list.append(start_date.strftime('%Y%m%d'))
-        start_date = start_date + datetime.timedelta(days=1)
+        start_date = start_date + timedelta(days=1)
 
     return date_list

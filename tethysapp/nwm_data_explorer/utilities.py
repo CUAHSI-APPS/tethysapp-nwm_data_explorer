@@ -9,7 +9,7 @@ from json import loads
 
 import zipfile
 import random
-import datetime
+from datetime import datetime
 from hurry.filesize import size
 
 temp_dir = '/tmp/nwm_data'
@@ -148,8 +148,8 @@ def get_file_metadata(selection_path):
         'dataName': file_name,
         'dataSize': size(file_stats.st_size),
         'dataOwnerName': getpwuid(file_stats.st_uid).pw_name,
-        'accessedAt': datetime.datetime.fromtimestamp(file_stats.st_atime).strftime('%Y-%m-%d %H:%M:%S'),
-        'updatedAt': datetime.datetime.fromtimestamp(file_stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+        'accessedAt': datetime.fromtimestamp(file_stats.st_atime).strftime('%Y-%m-%d %H:%M:%S'),
+        'updatedAt': datetime.fromtimestamp(file_stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
     }
 
 
@@ -208,7 +208,7 @@ def get_file_response_object(file_path, content_type):
     return response
 
 
-def validate_data(config, date_string, root_path, time=None, data_type=None):
+def validate_data(config, start_date_string, end_date_string, root_path, time=None, data_type=None):
     is_valid = True
     message = 'Data is valid.'
     valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
@@ -219,18 +219,27 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
             is_valid = False
             message = 'The \"config\" parameter must be included in the request'
             break
-        if date_string is None:
+        if start_date_string is None and config != 'analysis_assim':
             is_valid = False
-            message = 'The \"startDate\" parameter must be included in the request'
+            message = 'The \"startDate\" parameter must be included in the request, unless config=analysis_assim'
+            break
+        if start_date_string is None and end_date_string is not None:
+            is_valid = False
+            message = 'The endDate parameter was included without a startDate parameter.'
             break
         if config not in valid_configs:
             is_valid = False
             message = 'Invalid config. ' \
-                      'Choose one of the following: short_range, medium_range, long_range, analysis_assim.'
+                      'Choose one of the following: short_range, medium_range, long_range, analysis_assim'
             break
-
+        if config != 'analysis_assim' and end_date_string is not None:
+            is_valid = False
+            message = 'The endDate parameter is only applicable if config=analysis_assim'
+            break
         try:
-            datetime.datetime.strptime(date_string, '%Y-%m-%d')
+            datetime.strptime(start_date_string, '%Y-%m-%d')
+            if end_date_string is not None:
+                datetime.strptime(end_date_string, '%Y-%m-%d')
         except ValueError:
             is_valid = False
             message = 'Incorrect date format. Should be YYYY-MM-DD'
@@ -262,10 +271,21 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
                               'If specifying more than one, separate each with a comma.'
                     break
         if config != 'analysis_assim' \
-                and not os.path.exists(os.path.join(root_path, config, ''.join(date_string.split('-')))):
+                and not os.path.exists(os.path.join(root_path, config, ''.join(start_date_string.split('-')))):
             is_valid = False
             message = 'There is no data stored for the startDate specified.'
             break
         break
 
     return is_valid, message
+
+
+def generate_date_list(start_date_raw, end_date_raw):
+    date_list = []
+    start_date = datetime.strptime(start_date_raw, "%Y-%m-%d").date()
+    end_date = datetime.strptime(end_date_raw, "%Y-%m-%d").date()
+    while start_date <= end_date:
+        date_list.append(start_date.strftime('%Y%m%d'))
+        start_date = start_date + datetime.timedelta(days=1)
+
+    return date_list

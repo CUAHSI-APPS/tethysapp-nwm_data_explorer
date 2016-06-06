@@ -102,10 +102,12 @@ var $,
             if (!($('#inpt-date-all').is(':checked'))) {
                 if ($('#inpt-date-start').val() === '' || $('#inpt-date-end').val() === '') {
                     datesValid = false;
+                } else if (Number($('#inpt-date-start').val()) > Number($('#inpt-date-end').val())) {
+                    datesValid = false;
                 }
             }
             if (selectedTypes === null || selectedHours === null || selectedMembers === null || !datesValid) {
-                alert('A filter input field was left blank. Filters not applied');
+                alert('A filter input field was left blank or the start date was later than the end date. Filters not applied');
             } else {
                 updateFiltersList();
                 $('.contents').last().nextAll().remove();

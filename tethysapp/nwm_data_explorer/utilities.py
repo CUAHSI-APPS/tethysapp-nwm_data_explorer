@@ -123,12 +123,18 @@ def get_files_list(selection_path, filters_dict=None):
             if not os.path.isdir(os.path.join(selection_path, f)):
                 for key in filters_dict:
                     if not filter_out:
-                        for filter_val in filters_dict[key]:
-                            if str(filter_val) in str(f):
-                                filter_out = False
-                                break
-                            else:
-                                filter_out = True
+                        apply_filters = True
+                        if key == 'members' and 'long_range' not in selection_path:
+                            apply_filters = False
+                        if key == 'dates' and 'analysis_assim' not in selection_path:
+                            apply_filters = False
+                        if apply_filters:
+                            for filter_val in filters_dict[key]:
+                                if str(filter_val) in str(f):
+                                    filter_out = False
+                                    break
+                                else:
+                                    filter_out = True
         if not filter_out:
             files_list.append(full_path)
 

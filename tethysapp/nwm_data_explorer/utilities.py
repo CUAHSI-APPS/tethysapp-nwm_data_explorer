@@ -238,7 +238,8 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
         except ValueError:
             message = 'Incorrect date format. Should be YYYY-MM-DD'
             break
-        if datetime.strptime(end_date_raw, '%Y-%m-%d') < datetime.strptime(start_date_raw, '%Y-%m-%d'):
+
+        if end_date_raw and datetime.strptime(end_date_raw, '%Y-%m-%d') < datetime.strptime(start_date_raw, '%Y-%m-%d'):
             message = 'Invalid dates. The endDate is chronologically sooner than the startDate'
             break
             

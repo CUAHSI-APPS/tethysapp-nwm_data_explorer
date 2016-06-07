@@ -43,7 +43,7 @@ def api_get_file_list(request):
                 if start_date_raw and end_date_raw:
                     date_list = generate_date_list(start_date_raw, end_date_raw)
                     filters_dict['dates'] = date_list
-                else:
+                elif start_date_raw and not end_date_raw:
                     filters_dict['dates'] = [start_date_str]
                 path = os.path.join(root_path, config)
             else:

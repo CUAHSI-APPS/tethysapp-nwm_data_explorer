@@ -208,43 +208,40 @@ def get_file_response_object(file_path, content_type):
     return response
 
 
-def validate_data(config, start_date_string, end_date_string, root_path, time=None, data_type=None):
-    is_valid = True
+def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, data_type=None):
+    is_valid = False
     message = 'Data is valid.'
     valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
     valid_data_types = ['channel', 'land', 'reservoir', 'terrain']
 
     while True:
         if config is None:
-            is_valid = False
             message = 'The \"config\" parameter must be included in the request'
             break
-        if start_date_string is None and config != 'analysis_assim':
-            is_valid = False
+        if start_date_raw is None and config != 'analysis_assim':
             message = 'The \"startDate\" parameter must be included in the request, unless config=analysis_assim'
             break
-        if start_date_string is None and end_date_string is not None:
-            is_valid = False
+        if start_date_raw is None and end_date_raw is not None:
             message = 'The endDate parameter was included without a startDate parameter.'
             break
         if config not in valid_configs:
-            is_valid = False
             message = 'Invalid config. ' \
                       'Choose one of the following: short_range, medium_range, long_range, analysis_assim'
             break
-        if config != 'analysis_assim' and end_date_string is not None:
-            is_valid = False
+        if config != 'analysis_assim' and end_date_raw is not None:
             message = 'The endDate parameter is only applicable if config=analysis_assim'
             break
         try:
-            datetime.strptime(start_date_string, '%Y-%m-%d')
-            if end_date_string is not None:
-                datetime.strptime(end_date_string, '%Y-%m-%d')
+            datetime.strptime(start_date_raw, '%Y-%m-%d')
+            if end_date_raw is not None:
+                datetime.strptime(end_date_raw, '%Y-%m-%d')
         except ValueError:
-            is_valid = False
             message = 'Incorrect date format. Should be YYYY-MM-DD'
             break
-
+        if datetime.strptime(end_date_raw, '%Y-%m-%d') < datetime.strptime(start_date_raw, '%Y-%m-%d'):
+            message = 'Invalid dates. The endDate is chronologically sooner than the startDate'
+            break
+            
         if time:
             try:
                 times = time.split(',')
@@ -255,7 +252,6 @@ def validate_data(config, start_date_string, end_date_string, root_path, time=No
                 for t in times:
                     int(t)
             except ValueError:
-                is_valid = False
                 message = 'Incorrect time format. Each individual time must be formatted as an integer from 0 to 23. ' \
                           'For example, "time=0" for 12AM, "time=01" for 1AM, and so on up to "time=23" for 11PM. ' \
                           'If multiple times are desired, either separate each time by a comma, ' \
@@ -265,16 +261,16 @@ def validate_data(config, start_date_string, end_date_string, root_path, time=No
             data_types = data_type.split(',')
             for d_type in data_types:
                 if d_type not in valid_data_types:
-                    is_valid = False
                     message = 'Invalid data_type specified. ' \
                               'You may only choose from the following: channel, land, reservoir, or terrain. ' \
                               'If specifying more than one, separate each with a comma.'
                     break
         if config != 'analysis_assim' \
-                and not os.path.exists(os.path.join(root_path, config, ''.join(start_date_string.split('-')))):
-            is_valid = False
+                and not os.path.exists(os.path.join(root_path, config, ''.join(start_date_raw.split('-')))):
             message = 'There is no data stored for the startDate specified.'
             break
+
+        is_valid = True
         break
 
     return is_valid, message

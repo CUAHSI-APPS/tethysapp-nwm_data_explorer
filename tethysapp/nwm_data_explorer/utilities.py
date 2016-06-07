@@ -232,7 +232,8 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
             message = 'The endDate parameter is only applicable if config=analysis_assim'
             break
         try:
-            datetime.strptime(start_date_raw, '%Y-%m-%d')
+            if start_date_raw is not None:
+                datetime.strptime(start_date_raw, '%Y-%m-%d')
             if end_date_raw is not None:
                 datetime.strptime(end_date_raw, '%Y-%m-%d')
         except ValueError:

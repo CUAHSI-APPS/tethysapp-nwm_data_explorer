@@ -10,7 +10,7 @@
     <br>
     <h2>API Methods</h2>
     <p>All API methods must be called using the following pattern:</p>
-    <p><b>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api/[MethodName]/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
+    <p><b>{{ host }}/apps/nwm-data-explorer/api/[MethodName]/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
     <p>See documentation and specific examples for all available methods below.</p>
     <br>
     <h3>GetFileList</h3>
@@ -76,8 +76,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://apps.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel" target="_blank">
-        <code>https://apps.hydroshare.org/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel</code>
+    <a href="{{ host }}/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel" target="_blank">
+        <code>{{ host }}/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel</code>
     </a>
     <br><br>
 
@@ -109,8 +109,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://apps.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
-        <code>https://apps.hydroshare.org/apps/nwm-data-explorer/api/GetFileMetadata?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
+    <a href="{{ host }}/apps/nwm-data-explorer/api/GetFileMetadata?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
+        <code>{{ host }}/apps/nwm-data-explorer/api/GetFileMetadata?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
     </a>
     <br><br>
 
@@ -142,8 +142,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="https://apps.hydroshare.org/apps/nwm-data-explorer/api/GetFile?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
-        <code>https://apps.hydroshare.org/apps/nwm-data-explorer/api/GetFile?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
+    <a href="{{ host }}/apps/nwm-data-explorer/api/GetFile?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
+        <code>{{ host }}/apps/nwm-data-explorer/api/GetFile?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
     </a>
 {% endblock %}
 

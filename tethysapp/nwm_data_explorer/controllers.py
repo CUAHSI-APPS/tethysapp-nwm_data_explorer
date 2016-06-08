@@ -39,7 +39,10 @@ def api(request):
     """
     Controller for the app info page.
     """
+    host = request.get_host()
 
-    context = {}
+    context = {
+        'host': host
+    }
 
     return render(request, 'nwm_data_explorer/api.html', context)

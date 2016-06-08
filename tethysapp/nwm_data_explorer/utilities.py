@@ -235,6 +235,7 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
             break
         if config != 'long_range' and member is not None:
             message = 'The member parameter is only applicable if config=long_range'
+            break
         try:
             if start_date_raw is not None:
                 datetime.strptime(start_date_raw, '%Y-%m-%d')

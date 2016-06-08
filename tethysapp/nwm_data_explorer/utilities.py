@@ -285,6 +285,7 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
             except ValueError:
                 message = 'Incorrect member format. Each individual member must be an integer from 1 to 4. If ' \
                           'multiple members are desired, separate each member by a comma. For example, "member=1,3".'
+                break
 
         is_valid = True
         break

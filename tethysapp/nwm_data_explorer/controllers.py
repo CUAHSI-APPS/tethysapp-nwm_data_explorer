@@ -39,7 +39,7 @@ def api(request):
     """
     Controller for the app info page.
     """
-    host = request.get_host()
+    host = 'https://%s' % request.get_host()
 
     context = {
         'host': host

@@ -256,8 +256,7 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
                     if len(times) > 2:
                         raise ValueError
                 for t in times:
-                    int(t)
-                    if t not in valid_times:
+                    if int(t) not in valid_times:
                         raise ValueError
                 if len(times) > 24:
                     raise ValueError
@@ -283,8 +282,7 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
             try:
                 members = member.split(',')
                 for m in members:
-                    int(m)
-                    if m not in valid_members:
+                    if int(m) not in valid_members:
                         raise ValueError
                 if len(members) > 4:
                     raise ValueError

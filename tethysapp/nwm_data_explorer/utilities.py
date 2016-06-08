@@ -208,7 +208,7 @@ def get_file_response_object(file_path, content_type):
     return response
 
 
-def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, data_type=None):
+def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, data_type=None, member=None):
     is_valid = False
     message = 'Data is valid.'
     valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
@@ -231,6 +231,8 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
         if config != 'analysis_assim' and end_date_raw is not None:
             message = 'The endDate parameter is only applicable if config=analysis_assim'
             break
+        if config != 'long_range' and member is not None:
+            message = 'The member parameter is only applicable if config=long_range'
         try:
             if start_date_raw is not None:
                 datetime.strptime(start_date_raw, '%Y-%m-%d')
@@ -243,7 +245,7 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
         if end_date_raw and datetime.strptime(end_date_raw, '%Y-%m-%d') < datetime.strptime(start_date_raw, '%Y-%m-%d'):
             message = 'Invalid dates. The endDate is chronologically sooner than the startDate'
             break
-            
+
         if time:
             try:
                 times = time.split(',')
@@ -253,10 +255,12 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
                         raise ValueError
                 for t in times:
                     int(t)
+                if len(times) > 24:
+                    raise ValueError
             except ValueError:
-                message = 'Incorrect time format. Each individual time must be formatted as an integer from 0 to 23. ' \
-                          'For example, "time=0" for 12AM, "time=01" for 1AM, and so on up to "time=23" for 11PM. ' \
-                          'If multiple times are desired, either separate each time by a comma, ' \
+                message = 'Incorrect time format. Each individual time must be an integer from 0 to 23. ' \
+                          'Time 0 corresponds to 12AM, and so forth up to time 23 for 11PM. ' \
+                          'If multiple times are desired, either separate each time by a comma ' \
                           'or separate a range of times with a dash. For example, "time=1,3,5" or "time=0-10".'
                 break
         if data_type:
@@ -271,6 +275,16 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
                 and not os.path.exists(os.path.join(root_path, config, ''.join(start_date_raw.split('-')))):
             message = 'There is no data stored for the startDate specified.'
             break
+        if member:
+            try:
+                members = member.split(',')
+                for m in members:
+                    int(m)
+                if len(members) > 4:
+                    raise ValueError
+            except ValueError:
+                message = 'Incorrect member format. Each individual member must be an integer from 1 to 4. If ' \
+                          'multiple members are desired, separate each member by a comma. For example, "member=1,3".'
 
         is_valid = True
         break
@@ -287,3 +301,48 @@ def generate_date_list(start_date_raw, end_date_raw):
         start_date = start_date + timedelta(days=1)
 
     return date_list
+
+
+def generate_filters_dict(config, start_date_raw, end_date_raw, time, data_type, member):
+    filters_dict = {}
+    start_date_str = None
+
+    if start_date_raw:
+        start_date_str = ''.join(start_date_raw.split('-'))
+
+    if config == 'analysis_assim':
+        if start_date_raw and end_date_raw:
+            date_list = generate_date_list(start_date_raw, end_date_raw)
+            filters_dict['dates'] = date_list
+        elif start_date_raw and not end_date_raw:
+            filters_dict['dates'] = [start_date_str]
+
+    if time:
+        times = time.split(',')
+        if len(times) == 1:
+            times = times[0].split('-')
+            if len(times) > 1:
+                times = range(int(times[0]), int(times[1]) + 1)
+        for t in times:
+            t_mod = '0%s' % t if int(t) < 10 else t
+            if 'hours' in filters_dict:
+                filters_dict['hours'].append('t%sz' % t_mod)
+            else:
+                filters_dict['hours'] = ['t%sz' % t_mod]
+
+    if data_type:
+        data_types = data_type.split(',')
+        for d_type in data_types:
+            if 'types' in filters_dict:
+                filters_dict['types'].append(d_type)
+            else:
+                filters_dict['types'] = [d_type]
+    if member:
+        members = member.split(',')
+        for m in members:
+            if 'members' in filters_dict:
+                filters_dict['members'].append('_%s.f' % m)
+            else:
+                filters_dict['members'] = ['_%s.f' % m]
+
+    return filters_dict

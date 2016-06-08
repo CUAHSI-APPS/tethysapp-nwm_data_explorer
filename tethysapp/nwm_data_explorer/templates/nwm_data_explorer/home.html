@@ -3,12 +3,21 @@
 
 {% block app_content %}
     <h1>Welcome to the National Water Model Data Explorer</h1>
-    <p>
-        This app was created to allow users to explore the National Water Model data being stored both in the iRODS cloud and on
-        this server's filesystem. This can be done both from within this app by using one of two separate exploration pages, or
-        externally through the developers API provided. To learn more about the exploration pages, see the Data Exploration
-        Pages section below. To learn more about the developers api, click the Developers API link in the left navigation bar.
+    <p id="overview">
+        This app was created to allow users to explore the <a href="http://water.noaa.gov/about/nwm" target="_blank">National Water Model</a>
+        data being stored both in the iRODS cloud and on this server's filesystem.
+        This can be done both from within this app by using one of two separate exploration pages, or externally through the developers API provided.
     </p>
+    <p>
+        <b>To learn more about how the exploration pages work, see the Data Exploration Pages section below.</b>
+    </p>
+    <p>
+        <b>To learn more about the developers API, click <a href="api">here.</a><b>
+    </p>
+    <p>
+        <b>For detailed information regarding the National Water Model, click <a href="http://water.noaa.gov/about/nwm" target="_blank">here.</a></b>
+    </p>
+    <br><br>
     <h2>Data Exploration Pages</h2>
     <h5>iRODS Explorer</h5>
     <p>Currently under development. Once complete, this option will allow users to browse production files stored on the nwmZone of iRODS.</p>
@@ -65,16 +74,32 @@
     <p>
     <h6>7. Download All Button</h6>
     <p>
-        This button will ONLY appear under two conditions: 1) The user has modified the Filter Options (they are not ALL set to their
-        defaults of "All". And 2) The user has reached a directory containing only files, no folders. By clicking this button, every
-        file that appears in the current, bottom-most dropdown will be downloaded one by one. For that reason, the user should exercise
-        CAUTION and BEWARE. It is possible that nearly hundreds of files will be downloaded, even if filters have been applied. Also, it is
-        likely that only the first file will download. If this is the case, it is because your browser is set to block multiple popups from
-        this app. You can usually change this option by clicking the "Popup blocked" icon (that often appears in the browser to
+        This button will ONLY appear under two conditions:
+    </p>
+    <ol>
+        <li>
+            The user has modified the Filter Options (they are not all set to their
+            defaults).
+        </li>
+        <li>
+            The user has reached a directory containing only files, no folders.
+        </li>
+    </ol>
+    <p>
+        By clicking this button, every file that appears in the current, bottom-most dropdown will be downloaded one by one.
+        For that reason, the user should exercise <b>CAUTION</b>. It is possible that nearly hundreds of files will be downloaded,
+        even if filters have been applied. Also, it is likely that only the first file will download.
+        If this is the case, it is because your browser is set to block multiple popups from this app.
+    </p>
+    <br>
+    <img src="/static/nwm_data_explorer/images/screenshot-popup-blocked.png" width="100%">
+    <br><br>
+    <p>
+        You can usually change this option by clicking the "Popup blocked" icon (that often appears in the browser to
         the right of the URL entry box, see screenshot below) and selecting something similar to "Always allows popups on this site". Then you will have to
         re-click the Download All button for them all to download successfully.
     </p>
-    <img src="/static/nwm_data_explorer/images/screenshot-popup-blocked.png" width="100%">
+    <br><br>
 {% endblock %}
 
 {% block content_dependent_styles %}

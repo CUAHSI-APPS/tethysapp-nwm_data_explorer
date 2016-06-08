@@ -8,10 +8,12 @@
         separate application or script.
     </p>
     <p>The API endpoint is the current URL, <b>https://appsdev.hydroshare.org/apps/nwm-data-explorer/api</b></p>
+    <br>
     <h2>API Methods</h2>
     <p>All API methods must be called using the following pattern:</p>
     <p><b>endpoint/method/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
     <p>Note: The presence of parameter key/value pairs depends on the method. See specific examples for each method below.</p>
+    <br>
     <h3>GetFileList</h3>
     <table>
         <tr>
@@ -20,10 +22,10 @@
         </tr>
         <tr>
             <td><b>Returns</b></td>
-            <td colspan="5">A list of all available files in the NWM subset defined by the specified parameters</td>
+            <td colspan="5">A list of all available files in the NWM subset defined by the specified parameters.</td>
         </tr>
         <tr>
-            <td rowspan="5"><b>Params</b></td>
+            <td rowspan="7"><b>Params</b></td>
             <td><b>Name</b></td>
             <td><b>Description</b></td>
             <td><b>Valid Values</b></td>
@@ -32,31 +34,45 @@
         </tr>
         <tr>
             <td>config</td>
-            <td>The configuration of the files</td>
-            <td>One and only one of the following strings: "short_range", "long_range", "medium_range", or "analysis_assim"</td>
+            <td>The configuration of the files.</td>
+            <td>One and only one of the following strings: "short_range", "long_range", "medium_range", or "analysis_assim".</td>
             <td>Yes</td>
-            <td>Cannot be ommitted</td>
+            <td>Cannot be ommitted.</td>
         </tr>
         <tr>
             <td>startDate</td>
-            <td>The date on which the forecast was initialized</td>
-            <td>A string of the form "YYYY-MM-DD"</td>
-            <td>Yes</td>
-            <td>Cannot be omitted</td>
+            <td>Represents the date on which forecasts were initialized.</td>
+            <td>A string of the form "YYYY-MM-DD".</td>
+            <td>No, if config is analysis_assim. Yes if otherwise.</td>
+            <td>Every available date will be included.</td>
+        </tr>
+        <tr>
+            <td>endDate</td>
+            <td><i>Only applicable/valid if config=analysis_assim.</i><br>Represents the date on which forecasts were initialized and is used as the end bound on a range of forecast initializations to be returned.</td>
+            <td>A string of the form "YYYY-MM-DD".</td>
+            <td>No</td>
+            <td>The endDate is the same as the startDate.</td>
         </tr>
         <tr>
             <td>time</td>
-            <td>The time at which the forecast is initialized at</td>
-            <td>Comma-separated integers from 0 to 23, or two dash-separated values from 0 to 23 representing a desired range of values</td>
+            <td>The time of day at which the forecast is initialized, represented by an hour from 0 to 23. Time 0 corresponds to 12:00AM, and so forth up to time 23 for 11:00PM.</td>
+            <td>Comma-separated integers from 0 to 23, or two dash-separated values from 0 to 23 representing a desired range of values.</td>
             <td>No</td>
-            <td>"0-23" or all possible initialization times</td>
+            <td>All available initialization times.</td>
         </tr>
         <tr>
             <td>type</td>
-            <td>The type of data the file corresponds to</td>
-            <td>One or more of the following strings, separated by commas: "land", "terrain", "channel", or "reservoir"</td>
+            <td>The type of data the file corresponds to.</td>
+            <td>One or more of the following strings, separated by commas: "land", "terrain", "channel", or "reservoir".</td>
             <td>No</td>
-            <td>All types</td>
+            <td>All types.</td>
+        </tr>
+        <tr>
+            <td>member</td>
+            <td><i>Only applicable/valid if config=long_range.</i><br>Represents the desired time-lagged ensemble members of the long_range configuration.</td>
+            <td>Comma-separated integers from 1 to 4.</td>
+            <td>No</td>
+            <td>All members.</td>
         </tr>
     </table>
     <br>
@@ -74,7 +90,7 @@
         </tr>
         <tr>
             <th>Returns</th>
-            <td colspan="5">Key/value pairs representing all of the available metadata for the specified file</td>
+            <td colspan="5">Key/value pairs representing all of the available metadata for the specified file.</td>
         </tr>
         <tr>
             <td rowspan="5"><b>Params</b></td>
@@ -89,7 +105,7 @@
             <td>A string representing the desired file, exactly as it appears in the GetFileList return list.</td>
             <td>Any string that appears in the GetFileList return list.</td>
             <td>Yes</td>
-            <td>Cannot be ommitted</td>
+            <td>Cannot be ommitted.</td>
         </tr>
     </table>
     <br>
@@ -122,7 +138,7 @@
             <td>A string representing the desired file, exactly as it appears in the GetFileList return list.</td>
             <td>Any string that appears in the GetFileList return list.</td>
             <td>Yes</td>
-            <td>Cannot be ommitted</td>
+            <td>Cannot be ommitted.</td>
         </tr>
     </table>
     <br>

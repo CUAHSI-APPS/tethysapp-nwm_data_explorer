@@ -1,0 +1,10 @@
+#overview {
+    font-size: 15pt;
+}
+
+@media (min-width: 600px) {
+    #inner-app-content {
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+}

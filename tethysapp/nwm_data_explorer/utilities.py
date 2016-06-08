@@ -9,7 +9,7 @@ from json import loads
 
 import zipfile
 import random
-import datetime
+from datetime import datetime, timedelta
 from hurry.filesize import size
 
 temp_dir = '/tmp/nwm_data'
@@ -123,12 +123,18 @@ def get_files_list(selection_path, filters_dict=None):
             if not os.path.isdir(os.path.join(selection_path, f)):
                 for key in filters_dict:
                     if not filter_out:
-                        for filter_val in filters_dict[key]:
-                            if str(filter_val) in str(f):
-                                filter_out = False
-                                break
-                            else:
-                                filter_out = True
+                        apply_filters = True
+                        if key == 'members' and 'long_range' not in selection_path:
+                            apply_filters = False
+                        if key == 'dates' and 'analysis_assim' not in selection_path:
+                            apply_filters = False
+                        if apply_filters:
+                            for filter_val in filters_dict[key]:
+                                if str(filter_val) in str(f):
+                                    filter_out = False
+                                    break
+                                else:
+                                    filter_out = True
         if not filter_out:
             files_list.append(full_path)
 
@@ -142,8 +148,8 @@ def get_file_metadata(selection_path):
         'dataName': file_name,
         'dataSize': size(file_stats.st_size),
         'dataOwnerName': getpwuid(file_stats.st_uid).pw_name,
-        'accessedAt': datetime.datetime.fromtimestamp(file_stats.st_atime).strftime('%Y-%m-%d %H:%M:%S'),
-        'updatedAt': datetime.datetime.fromtimestamp(file_stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+        'accessedAt': datetime.fromtimestamp(file_stats.st_atime).strftime('%Y-%m-%d %H:%M:%S'),
+        'updatedAt': datetime.fromtimestamp(file_stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
     }
 
 
@@ -202,32 +208,45 @@ def get_file_response_object(file_path, content_type):
     return response
 
 
-def validate_data(config, date_string, root_path, time=None, data_type=None):
-    is_valid = True
+def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, data_type=None, member=None):
+    is_valid = False
     message = 'Data is valid.'
     valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
     valid_data_types = ['channel', 'land', 'reservoir', 'terrain']
+    valid_times = range(0, 24)
+    valid_members = range(1, 5)
 
     while True:
         if config is None:
-            is_valid = False
             message = 'The \"config\" parameter must be included in the request'
             break
-        if date_string is None:
-            is_valid = False
-            message = 'The \"startDate\" parameter must be included in the request'
+        if start_date_raw is None and config != 'analysis_assim':
+            message = 'The \"startDate\" parameter must be included in the request, unless config=analysis_assim'
+            break
+        if start_date_raw is None and end_date_raw is not None:
+            message = 'The endDate parameter was included without a startDate parameter.'
             break
         if config not in valid_configs:
-            is_valid = False
             message = 'Invalid config. ' \
-                      'Choose one of the following: short_range, medium_range, long_range, analysis_assim.'
+                      'Choose one of the following: short_range, medium_range, long_range, analysis_assim'
+            break
+        if config != 'analysis_assim' and end_date_raw is not None:
+            message = 'The endDate parameter is only applicable if config=analysis_assim'
+            break
+        if config != 'long_range' and member is not None:
+            message = 'The member parameter is only applicable if config=long_range'
+            break
+        try:
+            if start_date_raw is not None:
+                datetime.strptime(start_date_raw, '%Y-%m-%d')
+            if end_date_raw is not None:
+                datetime.strptime(end_date_raw, '%Y-%m-%d')
+        except ValueError:
+            message = 'Incorrect date format. Should be YYYY-MM-DD'
             break
 
-        try:
-            datetime.datetime.strptime(date_string, '%Y-%m-%d')
-        except ValueError:
-            is_valid = False
-            message = 'Incorrect date format. Should be YYYY-MM-DD'
+        if end_date_raw and datetime.strptime(end_date_raw, '%Y-%m-%d') < datetime.strptime(start_date_raw, '%Y-%m-%d'):
+            message = 'Invalid dates. The endDate is chronologically sooner than the startDate'
             break
 
         if time:
@@ -238,28 +257,98 @@ def validate_data(config, date_string, root_path, time=None, data_type=None):
                     if len(times) > 2:
                         raise ValueError
                 for t in times:
-                    int(t)
+                    if int(t) not in valid_times:
+                        raise ValueError
+                if len(times) > 24:
+                    raise ValueError
             except ValueError:
-                is_valid = False
-                message = 'Incorrect time format. Each individual time must be formatted as an integer from 0 to 23. ' \
-                          'For example, "time=0" for 12AM, "time=01" for 1AM, and so on up to "time=23" for 11PM. ' \
-                          'If multiple times are desired, either separate each time by a comma, ' \
+                message = 'Incorrect time format. Each individual time must be an integer from 0 to 23. ' \
+                          'Time 0 corresponds to 12AM, and so forth up to time 23 for 11PM. ' \
+                          'If multiple times are desired, either separate each time by a comma ' \
                           'or separate a range of times with a dash. For example, "time=1,3,5" or "time=0-10".'
                 break
         if data_type:
             data_types = data_type.split(',')
             for d_type in data_types:
                 if d_type not in valid_data_types:
-                    is_valid = False
                     message = 'Invalid data_type specified. ' \
                               'You may only choose from the following: channel, land, reservoir, or terrain. ' \
                               'If specifying more than one, separate each with a comma.'
                     break
         if config != 'analysis_assim' \
-                and not os.path.exists(os.path.join(root_path, config, ''.join(date_string.split('-')))):
-            is_valid = False
+                and not os.path.exists(os.path.join(root_path, config, ''.join(start_date_raw.split('-')))):
             message = 'There is no data stored for the startDate specified.'
             break
+        if member:
+            try:
+                members = member.split(',')
+                for m in members:
+                    if int(m) not in valid_members:
+                        raise ValueError
+                if len(members) > 4:
+                    raise ValueError
+            except ValueError:
+                message = 'Incorrect member format. Each individual member must be an integer from 1 to 4. If ' \
+                          'multiple members are desired, separate each member by a comma. For example, "member=1,3".'
+                break
+
+        is_valid = True
         break
 
     return is_valid, message
+
+
+def generate_date_list(start_date_raw, end_date_raw):
+    date_list = []
+    start_date = datetime.strptime(start_date_raw, "%Y-%m-%d").date()
+    end_date = datetime.strptime(end_date_raw, "%Y-%m-%d").date()
+    while start_date <= end_date:
+        date_list.append(start_date.strftime('%Y%m%d'))
+        start_date = start_date + timedelta(days=1)
+
+    return date_list
+
+
+def generate_filters_dict(config, start_date_raw, end_date_raw, time, data_type, member):
+    filters_dict = {}
+    start_date_str = None
+
+    if start_date_raw:
+        start_date_str = ''.join(start_date_raw.split('-'))
+
+    if config == 'analysis_assim':
+        if start_date_raw and end_date_raw:
+            date_list = generate_date_list(start_date_raw, end_date_raw)
+            filters_dict['dates'] = date_list
+        elif start_date_raw and not end_date_raw:
+            filters_dict['dates'] = [start_date_str]
+
+    if time:
+        times = time.split(',')
+        if len(times) == 1:
+            times = times[0].split('-')
+            if len(times) > 1:
+                times = range(int(times[0]), int(times[1]) + 1)
+        for t in times:
+            t_mod = '0%s' % t if int(t) < 10 else t
+            if 'hours' in filters_dict:
+                filters_dict['hours'].append('t%sz' % t_mod)
+            else:
+                filters_dict['hours'] = ['t%sz' % t_mod]
+
+    if data_type:
+        data_types = data_type.split(',')
+        for d_type in data_types:
+            if 'types' in filters_dict:
+                filters_dict['types'].append(d_type)
+            else:
+                filters_dict['types'] = [d_type]
+    if member:
+        members = member.split(',')
+        for m in members:
+            if 'members' in filters_dict:
+                filters_dict['members'].append('_%s.f' % m)
+            else:
+                filters_dict['members'] = ['_%s.f' % m]
+
+    return filters_dict

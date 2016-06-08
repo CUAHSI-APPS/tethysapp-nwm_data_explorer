@@ -32,6 +32,16 @@
             <option value="_4.f">4</option>
         </select>
         <br><br>
+        <label>Show analysis/assimilation initialization dates:</label>
+        <br>
+        <input type="checkbox" id="inpt-date-all" checked>
+        <label for="inpt-date-all">All available</label>
+        <span>&nbsp;&nbsp;&nbsp;OR&nbsp;&nbsp;&nbsp;</span>
+        <label for="inpt-date-start">Start date:</label>
+        <input type="date" class="inpt-date" id="inpt-date-start" disabled>
+        <label for="inpt-date-end">End date:</label>
+        <input type="date" class="inpt-date" id="inpt-date-end" disabled>
+        <br><br>
         <button type="button" class="btn btn-med btn-primary" id="btn-apply-filters">Apply Filters</button>
     </div>
     <br><br>
@@ -42,7 +52,8 @@
             <span class="glyphicon download" aria-hidden="true"></span>
             <img src="/static/nwm_data_explorer/images/download_icon.svg" class="button-icon"/> Download All
         </a>
-        <p><b>Note: You may need to allow popups on this page to enable all files to download. If not all files were downloaded, change browser settings to allow popups on this page.</b></p>
+        <br>
+        <b>Note: You may need to allow popups on this page to enable all files to download. If not all files were downloaded, change browser settings to allow popups on this page.</b>
     </span>
     <div id="dynamic-content">
     <span id="download-content">

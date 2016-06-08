@@ -8,7 +8,7 @@ var $,
     filtersDict,
     lastQuerySelectionPath,
     currentDirPath,
-    // fsPath = '/projects/water/nwm/nwm_sample?folder',
+// fsPath = '/projects/water/nwm/nwm_sample?folder',
     fsPath = '/projects/water/nwm/data?folder',
     irodsPath = '/nwmZone/home/nwm/data?folder';
 
@@ -43,6 +43,7 @@ var $,
         isEven,
         addFileMetadataToUI,
         initializeJqueryVariables,
+        initializeDateFiltersForm,
         formatDropDown,
         formatDropdownOptions;
 
@@ -50,6 +51,10 @@ var $,
      ***********FUNCTION INITIALIZATION*******************
      *****************************************************/
     addInitialEventListeners = function () {
+
+        $('#inpt-date-all').on('change', function () {
+            $('.inpt-date').prop('disabled', $(this).is(':checked'));
+        });
 
         $btnDownloadAll.on('click', function () {
             var downloadUrl;
@@ -92,8 +97,17 @@ var $,
             var selectedTypes = $('#slct-types').val();
             var selectedHours = $('#slct-hours-init').val();
             var selectedMembers = $('#slct-longrange-member').val();
-            if (selectedTypes === null || selectedHours === null || selectedMembers === null) {
-                alert('A filter input field was left blank. Filters not applied');
+            var datesValid = true;
+            
+            if (!($('#inpt-date-all').is(':checked'))) {
+                if ($('#inpt-date-start').val() === '' || $('#inpt-date-end').val() === '') {
+                    datesValid = false;
+                } else if (Number($('#inpt-date-start').val()) > Number($('#inpt-date-end').val())) {
+                    datesValid = false;
+                }
+            }
+            if (selectedTypes === null || selectedHours === null || selectedMembers === null || !datesValid) {
+                alert('A filter input field was left blank or the start date was later than the end date. Filters not applied');
             } else {
                 updateFiltersList();
                 $('.contents').last().nextAll().remove();
@@ -326,6 +340,18 @@ var $,
         var $selectTypes = $('#slct-types');
         var $selectMembers = $('#slct-longrange-member');
 
+        var addDatesToFilterList = function () {
+            var startDate = new Date($('#inpt-date-start').val());
+            var endDate = new Date($('#inpt-date-end').val());
+
+            if (!($('#inpt-date-all').is(':checked'))) {
+                filtersDict['dates'] = [];
+                while (startDate <= endDate) {
+                    filtersDict['dates'].push(startDate.toISOString().split('T')[0].split('-').join(''));
+                    startDate.setDate(startDate.getDate() + 1);
+                }
+            }
+        };
         var addValsToFilterList = function ($slct, type) {
             var selectedValsList = $slct.val();
             if (selectedValsList.indexOf('all') === -1) {
@@ -345,6 +371,7 @@ var $,
             addValsToFilterList($selectTypes, 'types');
             addValsToFilterList($selectHours, 'hours');
             addValsToFilterList($selectMembers, 'members');
+            addDatesToFilterList();
         }
     };
 
@@ -410,6 +437,15 @@ var $,
         $downloadAll = $('#download-all');
     };
 
+    initializeDateFiltersForm = function () {
+        var date = new Date();
+        var dateStartStr = date.toISOString().split('T')[0];
+        $('#inpt-date-end').val(dateStartStr);
+        date.setDate(date.getDate() - 30);
+        var dateEndStr = date.toISOString().split('T')[0];
+        $('#inpt-date-start').val(dateEndStr);
+    };
+
     formatDropDown = function () {
         $('.contents:last-child').select2({
             placeholder: "Select a file/folder",
@@ -441,6 +477,7 @@ var $,
 
         initializeJqueryVariables();
         addInitialEventListeners();
+        initializeDateFiltersForm();
         updateFiltersList(true);
         if (window.location.pathname.indexOf('files_explorer') !== -1) {
             $title.text('Filesystem Explorer');

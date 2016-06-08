@@ -213,6 +213,8 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
     message = 'Data is valid.'
     valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
     valid_data_types = ['channel', 'land', 'reservoir', 'terrain']
+    valid_times = range(0, 24)
+    valid_members = range(1, 5)
 
     while True:
         if config is None:
@@ -255,6 +257,8 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
                         raise ValueError
                 for t in times:
                     int(t)
+                    if t not in valid_times:
+                        raise ValueError
                 if len(times) > 24:
                     raise ValueError
             except ValueError:
@@ -280,6 +284,8 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
                 members = member.split(',')
                 for m in members:
                     int(m)
+                    if m not in valid_members:
+                        raise ValueError
                 if len(members) > 4:
                     raise ValueError
             except ValueError:

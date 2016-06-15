@@ -64,8 +64,8 @@
             <td>All available initialization times.</td>
         </tr>
         <tr>
-            <td>type</td>
-            <td>The type of data the file corresponds to.</td>
+            <td>geom</td>
+            <td>The geometry of the files.</td>
             <td>One or more of the following strings, separated by commas: "land", "terrain", "channel", or "reservoir".</td>
             <td>No</td>
             <td>All types.</td>
@@ -80,8 +80,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="{{ host }}/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel" target="_blank">
-        <code>{{ host }}/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate=2016-06-01&time=2,3&type=terrain,channel</code>
+    <a href="{{ host }}/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate={{ date }}&time=2,3&geom=terrain,channel" target="_blank">
+        <code>{{ host }}/apps/nwm-data-explorer/api/GetFileList/?config=short_range&startDate={{ date }}&time=2,3&geom=terrain,channel</code>
     </a>
     <br><br>
 
@@ -260,8 +260,8 @@
     </table>
     <br>
     <h5>Example:</h5>
-    <a href="{{ host }}/apps/nwm-forecasts/api/GetWaterML/?config=short_range&geom=channel_rt&variable=streamflow&COMID=10376606&date=2016-05-07&time=00" target="_blank">
-        <code>{{ host }}/apps/nwm-forecasts/api/GetWaterML/?config=short_range&geom=channel_rt&variable=streamflow&COMID=10376606&date=2016-05-07&time=00</code>
+    <a href="{{ host }}/apps/nwm-forecasts/api/GetWaterML/?config=short_range&geom=channel_rt&variable=streamflow&COMID=10376606&startDate={{ date }}&time=00" target="_blank">
+        <code>{{ host }}/apps/nwm-forecasts/api/GetWaterML/?config=short_range&geom=channel_rt&variable=streamflow&COMID=10376606&startDate={{ date }}&time=00</code>
     </a>
 {% endblock %}
 

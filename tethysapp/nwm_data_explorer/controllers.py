@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
+from utilities import get_example_date
 
 @login_required()
 def home(request):
@@ -40,10 +40,10 @@ def api(request):
     """
     Controller for the app info page.
     """
-    host = 'https://%s' % request.get_host()
 
     context = {
-        'host': host
+        'host': 'https://%s' % request.get_host(),
+        'date': get_example_date()
     }
 
     return render(request, 'nwm_data_explorer/api.html', context)

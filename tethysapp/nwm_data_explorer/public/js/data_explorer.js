@@ -71,7 +71,7 @@ var $,
         $('.slct-filter').on('select2:select', function (e) {
             var selections = $(this).val();
             var allIndex = selections.indexOf('all');
-            if (e.params.data.id === 'all' || ($(this).attr('id') === 'slct-types' && selections.length === 4 && allIndex === -1) || ($(this).attr('id') === 'slct-hours-init' && selections.length === 24 && allIndex === -1)) {
+            if (e.params.data.id === 'all' || ($(this).attr('id') === 'slct-geoms' && selections.length === 4 && allIndex === -1) || ($(this).attr('id') === 'slct-hours-init' && selections.length === 24 && allIndex === -1)) {
                 $(this).val(['all']).trigger("change");
             } else if (selections.length > 1 && allIndex !== -1) {
                 selections.splice(allIndex, 1);
@@ -94,7 +94,7 @@ var $,
         });
 
         $('#btn-apply-filters').on('click', function () {
-            var selectedTypes = $('#slct-types').val();
+            var selectedGeoms = $('#slct-geoms').val();
             var selectedHours = $('#slct-hours-init').val();
             var selectedMembers = $('#slct-longrange-member').val();
             var datesValid = true;
@@ -106,7 +106,7 @@ var $,
                     datesValid = false;
                 }
             }
-            if (selectedTypes === null || selectedHours === null || selectedMembers === null || !datesValid) {
+            if (selectedGeoms === null || selectedHours === null || selectedMembers === null || !datesValid) {
                 alert('A filter input field was left blank or the start date was later than the end date. Filters not applied');
             } else {
                 updateFiltersList();
@@ -337,7 +337,7 @@ var $,
 
     updateFiltersList = function (initial) {
         var $selectHours = $('#slct-hours-init');
-        var $selectTypes = $('#slct-types');
+        var $selectGeoms = $('#slct-geoms');
         var $selectMembers = $('#slct-longrange-member');
 
         var addDatesToFilterList = function () {
@@ -368,7 +368,7 @@ var $,
         filtersDict = {};
 
         if (!initial) {
-            addValsToFilterList($selectTypes, 'types');
+            addValsToFilterList($selectGeoms, 'geoms');
             addValsToFilterList($selectHours, 'hours');
             addValsToFilterList($selectMembers, 'members');
             addDatesToFilterList();

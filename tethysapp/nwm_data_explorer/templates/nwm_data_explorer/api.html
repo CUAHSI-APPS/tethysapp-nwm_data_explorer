@@ -10,11 +10,15 @@
     <br>
     <h2>API Methods</h2>
     <p>All API methods must be called using the following pattern:</p>
-    <p><b>{{ host }}/apps/nwm-data-explorer/api/[MethodName]/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
+    <p><b>{{ host }}/apps/[parent-app]/api/[MethodName]/?param1=value1&#38;param2=value2&#38;...paramN=valueN</b></p>
     <p>See documentation and specific examples for all available methods below.</p>
     <br>
     <h3>GetFileList</h3>
     <table>
+        <tr>
+            <td><b>Parent App</b></td>
+            <td colspan="5">nwm-data-explorer</td>
+        </tr>
         <tr>
             <td><b>Supported Methods</b></td>
             <td colspan="5">GET</td>
@@ -41,16 +45,16 @@
         <tr>
             <td>startDate</td>
             <td>Represents the date on which forecasts were initialized.</td>
-            <td>A string of the form "YYYY-MM-DD".</td>
-            <td>No, if config is analysis_assim. Yes if otherwise.</td>
-            <td>Every available date will be included.</td>
+            <td>A string of the form "YYYY-MM-DD" representing any date between "2016-05-28" and the current date.</td>
+            <td>No, if config is analysis_assim. Yes, if otherwise.</td>
+            <td>All available dates.</td>
         </tr>
         <tr>
             <td>endDate</td>
             <td><i>Only applicable/valid if config=analysis_assim.</i><br>Represents the date on which forecasts were initialized and is used as the end bound on a range of forecast initializations to be returned.</td>
-            <td>A string of the form "YYYY-MM-DD".</td>
+            <td>A string of the form "YYYY-MM-DD" representing any date between "2016-05-28" and the current date.</td>
             <td>No</td>
-            <td>The endDate is the same as the startDate.</td>
+            <td>The same as the startDate.</td>
         </tr>
         <tr>
             <td>time</td>
@@ -83,6 +87,10 @@
 
     <h3>GetFileMetadata</h3>
     <table>
+        <tr>
+            <td><b>Parent App</b></td>
+            <td colspan="5">nwm-data-explorer</td>
+        </tr>
         <tr>
             <th>Supported Methods</th>
             <td colspan="5">GET</td>
@@ -117,6 +125,10 @@
     <h3>GetFile</h3>
     <table>
         <tr>
+            <td><b>Parent App</b></td>
+            <td colspan="5">nwm-data-explorer</td>
+        </tr>
+        <tr>
             <th>Supported Methods</th>
             <td colspan="5">GET</td>
         </tr>
@@ -144,6 +156,112 @@
     <h5>Example:</h5>
     <a href="{{ host }}/apps/nwm-data-explorer/api/GetFile?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc" target="_blank">
         <code>{{ host }}/apps/nwm-data-explorer/api/GetFile?file=short_range-20160601-nwm.t02z.short_range.terrain_rt.f001.conus.nc_georeferenced.nc</code>
+    </a>
+
+    <h3>GetWaterML</h3>
+    <table>
+        <tr>
+            <td><b>Parent App</b></td>
+            <td colspan="5">nwm-forecasts</td>
+        </tr>
+        <tr>
+            <td><b>Supported Methods</b></td>
+            <td colspan="5">GET</td>
+        </tr>
+        <tr>
+            <td><b>Returns</b></td>
+            <td colspan="5">A WaterML file of the specified forecast.</td>
+        </tr>
+        <tr>
+            <td rowspan="12"><b>Params</b></td>
+            <td><b>Name</b></td>
+            <td><b>Description</b></td>
+            <td><b>Valid Values</b></td>
+            <td><b>Required</b></td>
+            <td><b>Default if omitted</b></td>
+        </tr>
+        <tr>
+            <td>config</td>
+            <td>The configuration of the forecast.</td>
+            <td>One and only one of the following strings: "short_range", "long_range", "medium_range", or "analysis_assim".</td>
+            <td>Yes</td>
+            <td>Cannot be ommitted.</td>
+        </tr>
+        <tr>
+            <td>geom</td>
+            <td>The geometry of the forecast.</td>
+            <td>One and only one of the following strings: "channel_rt", "land", or "reservoir".</td>
+            <td>Yes.</td>
+            <td>Cannot be ommitted.</td>
+        </tr>
+        <tr>
+            <td>variable</td>
+            <td>The variable of the forecast.</td>
+            <td>One and only one of the following strings, depending on the specified configuration and geometry. For config=analysis_assim and geom=channel_rt: "streamflow", or "velocity". For config=analysis_assim and geom=reservoir: "inflow", or "outflow". For config=analysis_assim and geom=land: "SNOWH", "SNEQV", "FSNO", "ACCET", "SOILSAT_TOP", or "SNOWT_AVG". For config=short_range and geom=channel_rt: "streamflow", or "velocity". For config=short_range and geom=reservoir: "inflow", or "outflow". For config=short_range and geom=land: "SNOWH", "SNEQV", "FSNO", "ACCET", "SOILSAT_TOP", or "SNOWT_AVG". For config=medium_range and geom=channel_rt: "streamflow", or "velocity". For config=medium_range and geom=reservoir: "inflow", or "outflow". For config=medium_range and geom=land: "SNOWH", "SNEQV", "FSNO", "ACCET", "SOILSAT_TOP", "SNOWT_AVG", "UGDRNOFF", "ACCECAN", "SOIL_T", "SOIL_M", or "CANWAT". For config=long_range and geom=channel_rt: "streamflow". For config=long_range and geom=reservoir: "inflow", or "outflow". For config=long_range and geom=land: "SNEQV", "ACCET", "SOILSAT", "UGDRNOFF", "SFCRNOFF", "CANWAT". Where "SNOWH" is Snow Depth, SNEQV is Snow Water Equivalent, "FSNO" is Snow Cover, "ACCET" is Accumulated Total Evapotranspiration, "SOILSAT_TOP" is Near-surface Soil Saturation, "SNOWT_AVG" is Average Snow Temperature, "UGDRNOFF" is Accumulated Groundwater Runoff, "ACCECAN" is Accumulated Canopy Evaporation, "SOIL_T" is Soil Temperature, "SOIL_M" is Volumetric Soil Moisture, "CANWAT" is Total Canopy Water, "SOILSAT" is Soil Saturation (Column Integrated), and "SFCRNOFF" is Accumulated Surface Runoff, </td>
+            <td>Yes.</td>
+            <td>Cannot be ommitted.</td>
+        </tr>
+        <tr>
+            <td>COMID</td>
+            <td>The identifier of the stream reach, reservoir, or grid cell for the forecast.</td>
+            <td>A numeric string. e.g. "12345678". If geometry=land, enter the grid south_north index followed by a comma and then the grid west_east index. e.g. "1357,2468"</td>
+            <td>Yes.</td>
+            <td>Cannot be ommitted.</td>
+        </tr>
+        <tr>
+            <td>lon</td>
+            <td>Longitude</td>
+            <td>A numeric string with a longitude coordinate in decimal degrees".</td>
+            <td>No.</td>
+            <td>Empty string.</td>
+        </tr>
+        <tr>
+            <td>lat</td>
+            <td>Latitude</td>
+            <td>A numeric string with a latitude coordinate in decimal degrees".</td>
+            <td>No.</td>
+            <td>Empty string.</td>
+        </tr>
+        <tr>
+            <td>startDate</td>
+            <td>The beginning date of the forecast.</td>
+            <td>A string of the form "YYYY-MM-DD" representing any date between "2016-05-28" and the current date.</td>
+            <td>Yes.</td>
+            <td>Cannot be ommitted.</td>
+        </tr>
+        <tr>
+            <td>endDate</td>
+            <td><i>Only applicable/valid if config=analysis_assim.</i><br>The ending date of the analysis assimilation.</td>
+            <td>A string of the form "YYYY-MM-DD" representing any date between "2016-05-28" and the current date.</td>
+            <td>No.</td>
+            <td>The endDate is the startDate plus one day.</td>
+        </tr>
+        <tr>
+            <td>time</td>
+            <td><i>Only applicable/valid if config=short_range.</i><br>The time of day at which the forecast is initialized, represented by an hour from 00 to 23. Time 00 corresponds to 12:00AM, and so forth up to time 23 for 11:00PM.</td>
+            <td>Numeric string from 00 to 23. e.g. "00"</td>
+            <td>No.</td>
+            <td>"00"</td>
+        </tr>
+        <tr>
+            <td>lag</td>
+            <td><i>Only applicable/valid if config=long_range.</i><br>The time lag of the long range ensemble forecast.</td>
+            <td>The following strings: t00z, t06z, t12z. e.g. "t00z"</td>
+            <td>No</td>
+            <td>"t00z"</td>
+        </tr>
+        <tr>
+            <td>member</td>
+            <td><i>Only applicable/valid if config=long_range.</i><br>Represents the desired ensemble member of the long range forecast.</td>
+            <td>Numeric string between 1 and 4. e.g. "1".</td>
+            <td>No</td>
+            <td>"1"</td>
+        </tr>
+    </table>
+    <br>
+    <h5>Example:</h5>
+    <a href="{{ host }}/apps/nwm-forecasts/api/GetWaterML/?config=short_range&geom=channel_rt&variable=streamflow&COMID=10376606&date=2016-05-07&time=00" target="_blank">
+        <code>{{ host }}/apps/nwm-forecasts/api/GetWaterML/?config=short_range&geom=channel_rt&variable=streamflow&COMID=10376606&date=2016-05-07&time=00</code>
     </a>
 {% endblock %}
 

@@ -15,7 +15,7 @@ def api_get_file_list(request):
         start_date_raw = None
         end_date_raw = None
         time = None
-        data_type = None
+        geom = None
         member = None
 
         if request.GET.get('config'):
@@ -26,12 +26,12 @@ def api_get_file_list(request):
             end_date_raw = request.GET['endDate']
         if request.GET.get('time'):
             time = request.GET['time']
-        if request.GET.get('type'):
-            data_type = request.GET['type']
+        if request.GET.get('geom'):
+            geom = request.GET['geom']
         if request.GET.get('member'):
             member = request.GET['member']
 
-        data_is_valid, message = validate_data(config, start_date_raw, end_date_raw, root_path, time, data_type, member)
+        data_is_valid, message = validate_data(config, start_date_raw, end_date_raw, root_path, time, geom, member)
 
         if not data_is_valid:
             json_data['status_code'] = 400
@@ -39,7 +39,7 @@ def api_get_file_list(request):
         else:
             path = os.path.join(root_path, config) if config == 'analysis_assim' \
                 else os.path.join(root_path, config, ''.join(start_date_raw.split('-')))
-            filters_dict = generate_filters_dict(config, start_date_raw, end_date_raw, time, data_type, member)
+            filters_dict = generate_filters_dict(config, start_date_raw, end_date_raw, time, geom, member)
             files_list = get_files_list(path, filters_dict=filters_dict)
 
             if len(files_list) == 0:

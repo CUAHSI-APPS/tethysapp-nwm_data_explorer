@@ -208,11 +208,11 @@ def get_file_response_object(file_path, content_type):
     return response
 
 
-def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, data_type=None, member=None):
+def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, geom=None, member=None):
     is_valid = False
     message = 'Data is valid.'
     valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
-    valid_data_types = ['channel', 'land', 'reservoir', 'terrain']
+    valid_geoms = ['channel', 'land', 'reservoir', 'terrain']
     valid_times = range(0, 24)
     valid_members = range(1, 5)
 
@@ -267,11 +267,11 @@ def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, da
                           'If multiple times are desired, either separate each time by a comma ' \
                           'or separate a range of times with a dash. For example, "time=1,3,5" or "time=0-10".'
                 break
-        if data_type:
-            data_types = data_type.split(',')
-            for d_type in data_types:
-                if d_type not in valid_data_types:
-                    message = 'Invalid data_type specified. ' \
+        if geom:
+            geoms = geom.split(',')
+            for g in geoms:
+                if g not in valid_geoms:
+                    message = 'Invalid geom parameter. ' \
                               'You may only choose from the following: channel, land, reservoir, or terrain. ' \
                               'If specifying more than one, separate each with a comma.'
                     break
@@ -309,7 +309,7 @@ def generate_date_list(start_date_raw, end_date_raw):
     return date_list
 
 
-def generate_filters_dict(config, start_date_raw, end_date_raw, time, data_type, member):
+def generate_filters_dict(config, start_date_raw, end_date_raw, time, geom, member):
     filters_dict = {}
     start_date_str = None
 
@@ -336,13 +336,13 @@ def generate_filters_dict(config, start_date_raw, end_date_raw, time, data_type,
             else:
                 filters_dict['hours'] = ['t%sz' % t_mod]
 
-    if data_type:
-        data_types = data_type.split(',')
-        for d_type in data_types:
+    if geom:
+        geoms = geom.split(',')
+        for g in geoms:
             if 'types' in filters_dict:
-                filters_dict['types'].append(d_type)
+                filters_dict['geoms'].append(g)
             else:
-                filters_dict['types'] = [d_type]
+                filters_dict['geoms'] = [g]
     if member:
         members = member.split(',')
         for m in members:
@@ -352,3 +352,9 @@ def generate_filters_dict(config, start_date_raw, end_date_raw, time, data_type,
                 filters_dict['members'] = ['_%s.f' % m]
 
     return filters_dict
+
+
+def get_example_date():
+    now = datetime.now()
+    example_date_raw = now - timedelta(days=2)
+    return example_date_raw.strftime('%Y-%m-%d')

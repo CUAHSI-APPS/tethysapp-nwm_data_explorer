@@ -211,7 +211,8 @@ def get_file_response_object(file_path, content_type):
 def validate_data(config, start_date_raw, end_date_raw, root_path, time=None, geom=None, member=None):
     is_valid = False
     message = 'Data is valid.'
-    valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim']
+    valid_configs = ['short_range', 'medium_range', 'long_range', 'analysis_assim',
+                     'fe_analysis_assim', 'fe_medium_range', 'fe_short_range']
     valid_geoms = ['channel', 'land', 'reservoir', 'terrain']
     valid_times = range(0, 24)
     valid_members = range(1, 5)
